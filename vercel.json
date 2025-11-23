@@ -1,7 +1,7 @@
 {
   "version": 2,
   "routes": [
-    { "src": "/_next/static/(.*)", "dest": "/_next/static/$1" },
+    { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
