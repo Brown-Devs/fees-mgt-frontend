@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Login from "./pages/Auth/login";
+import Login from "./pages/auth/login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminSchool from "./pages/admin/AdminSchool";
 import AdminLayout from "./components/admin/AdminLayout";
