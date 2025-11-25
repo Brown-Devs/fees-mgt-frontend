@@ -1,12 +1,6 @@
+// src/pages/Superadmin/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-/**
- * Superadmin Dashboard (copy-paste ready)
- * - Complete Add / View / Edit / ApiKey modals included
- * - Action buttons use type="button"
- * - Expects backend endpoints at /api/schools
- */
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || "https://fees-mgmt-backend-1.onrender.com";
 const TOKEN_KEY = "token";
@@ -43,15 +37,23 @@ function Card({ title, value, subtitle }) {
 /* Dummy usage bar data */
 const DUMMY_USAGE = [50, 120, 90, 30, 200, 140, 80];
 
-/* ---------- AddSchoolModal ---------- */
+/* ---------- AddSchoolModal (with optional admin) ---------- */
 function AddSchoolModal({ onClose = () => {}, onCreate = async () => {} }) {
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
     name: "", code: "", address: "", city: "", state: "", pin: "", contactEmail: "", contactPhone: ""
   });
 
+  // admin creation toggles & fields
+  const [createAdmin, setCreateAdmin] = useState(false);
+  const [admin, setAdmin] = useState({ name: "", email: "", password: "", role: "admin", phone: "" });
+
   async function submit() {
     if (!form.name || !form.code || !form.address) { alert("Please fill name, code and address"); return; }
+    if (createAdmin) {
+      if (!admin.name || !admin.email || !admin.password) { alert("Please fill admin name, email, and password"); return; }
+    }
+
     setCreating(true);
     try {
       const payload = {
@@ -62,7 +64,11 @@ function AddSchoolModal({ onClose = () => {}, onCreate = async () => {} }) {
         contactPhone: form.contactPhone || undefined,
         meta: { city: form.city || undefined, state: form.state || undefined, pin: form.pin || undefined }
       };
-      await onCreate(payload);
+
+      const adminPayload = createAdmin ? { ...admin } : null;
+
+      // parent handles creating school and admin
+      await onCreate(payload, adminPayload);
       onClose();
     } catch (err) {
       alert("Create failed: " + (err?.message || err));
@@ -91,6 +97,26 @@ function AddSchoolModal({ onClose = () => {}, onCreate = async () => {} }) {
               <div><label className="block text-sm mb-1">Contact Email</label><input className="w-full px-3 py-2 border rounded" value={form.contactEmail} onChange={e=>setForm(f=>({...f,contactEmail:e.target.value}))} /></div>
               <div><label className="block text-sm mb-1">Contact Phone</label><input className="w-full px-3 py-2 border rounded" value={form.contactPhone} onChange={e=>setForm(f=>({...f,contactPhone:e.target.value}))} /></div>
             </div>
+
+            <div className="pt-2 border-t">
+              <label className="inline-flex items-center gap-2">
+                <input type="checkbox" className="w-4 h-4" checked={createAdmin} onChange={e=>setCreateAdmin(e.target.checked)} />
+                <span className="text-sm">Create admin for this school?</span>
+              </label>
+            </div>
+
+            {createAdmin && (
+              <div className="mt-2 p-3 border rounded bg-slate-50">
+                <div className="text-sm font-medium mb-2">Admin details</div>
+                <div className="grid gap-3">
+                  <div><label className="block text-sm mb-1">Admin Name *</label><input className="w-full px-3 py-2 border rounded" value={admin.name} onChange={e=>setAdmin(a=>({...a,name:e.target.value}))} /></div>
+                  <div><label className="block text-sm mb-1">Admin Email *</label><input className="w-full px-3 py-2 border rounded" value={admin.email} onChange={e=>setAdmin(a=>({...a,email:e.target.value}))} /></div>
+                  <div><label className="block text-sm mb-1">Password *</label><input type="password" className="w-full px-3 py-2 border rounded" value={admin.password} onChange={e=>setAdmin(a=>({...a,password:e.target.value}))} /></div>
+                  <div><label className="block text-sm mb-1">Phone (optional)</label><input className="w-full px-3 py-2 border rounded" value={admin.phone} onChange={e=>setAdmin(a=>({...a,phone:e.target.value}))} /></div>
+                  <div><label className="block text-sm mb-1">Role</label><input className="w-full px-3 py-2 border rounded" value={admin.role} onChange={e=>setAdmin(a=>({...a,role:e.target.value}))} /></div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="px-6 py-3 border-t flex justify-end gap-3">
@@ -126,9 +152,99 @@ function ViewSchoolModal({ school = null, onClose = () => {} }) {
           <div><strong>Contact Email:</strong> {school.contactEmail || '-'}</div>
           <div><strong>Contact Phone:</strong> {school.contactPhone || '-'}</div>
           <div><strong>Created:</strong> {formatDate(school.createdAt || school.created_at)}</div>
-          
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ---------- AdminDetailsModal ---------- */
+function AdminDetailsModal({ admin = null, onClose = () => {} }) {
+  if (!admin) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative z-50 w-full max-w-md bg-white rounded-lg shadow-lg border overflow-auto">
+        <div className="px-6 py-3 border-b flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Admin Details</h3>
+          <button type="button" onClick={onClose} className="text-gray-500">Close</button>
+        </div>
+        <div className="p-6 space-y-3 text-sm text-slate-700">
+          <div><strong>Name:</strong> {admin.fullName || admin.name || "-"}</div>
+          <div><strong>Email:</strong> {admin.email || "-"}</div>
+          <div><strong>Role:</strong> {admin.role || "-"}</div>
+          <div><strong>Active:</strong> {admin.isActive ? "Yes" : "No"}</div>
+          <div><strong>Assigned Branches:</strong> {(admin.assignedBranchIds && admin.assignedBranchIds.length) ? admin.assignedBranchIds.join(", ") : "-"}</div>
+          <div><strong>Created:</strong> {formatDate(admin.createdAt || admin.created_at)}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- AdminsModal (list for a school) ---------- */
+function AdminsModal({ school = null, onClose = () => {}, fetchAdminsFn }) {
+  const [admins, setAdmins] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
+
+  useEffect(() => {
+    if (!school) return;
+    let mounted = true;
+    async function load() {
+      setLoading(true);
+      try {
+        const arr = await fetchAdminsFn(school._id || school.id);
+        if (!mounted) return;
+        setAdmins(Array.isArray(arr) ? arr : []);
+      } catch (err) {
+        console.error("Failed to load admins", err);
+        alert("Failed to load admins: " + (err?.message || err));
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
+    return () => { mounted = false; };
+  }, [school]);
+
+  if (!school) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative z-50 w-full max-w-3xl bg-white rounded-lg shadow-lg border overflow-auto max-h-[80vh]">
+        <div className="px-6 py-3 border-b flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Admins for {school.name}</h3>
+          <div className="flex items-center gap-2">
+            <button onClick={onClose} className="text-sm px-3 py-1 border rounded">Close</button>
+          </div>
+        </div>
+
+        <div className="p-4">
+          {loading ? (
+            <div className="text-sm text-slate-500 py-6 text-center">Loading admins…</div>
+          ) : admins.length === 0 ? (
+            <div className="text-sm text-slate-500 py-6 text-center">No admins found for this school.</div>
+          ) : (
+            <div className="space-y-2">
+              {admins.map(a => (
+                <div key={a._id || a.id} className="flex items-center justify-between gap-3 p-3 border rounded bg-slate-50">
+                  <div className="min-w-0">
+                    <div className="font-medium text-slate-900">{a.fullName || a.name}</div>
+                    <div className="text-xs text-slate-500 truncate">{a.email} · {a.phone || "-"}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setSelectedAdmin(a)} className="px-2 py-1 text-xs border rounded text-indigo-600 hover:bg-indigo-50">View</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* nested AdminDetailsModal */}
+      {selectedAdmin && <AdminDetailsModal admin={selectedAdmin} onClose={() => setSelectedAdmin(null)} />}
     </div>
   );
 }
@@ -210,44 +326,6 @@ function EditSchoolModal({ school = null, onClose = () => {}, onSave = async () 
   );
 }
 
-/* ---------- ApiKeyModal (demo) ---------- */
-function ApiKeyModal({ onClose = () => {}, onCreate = async () => {} }) {
-  const [creating, setCreating] = useState(false);
-  const [form, setForm] = useState({ provider: "sensy", key: "", credits: 1000 });
-
-  async function submit() {
-    if (!form.key) { alert("Enter key"); return; }
-    setCreating(true);
-    try {
-      await onCreate(form);
-      onClose();
-    } catch (err) {
-      alert("API key create failed: " + (err?.message || err));
-    } finally { setCreating(false); }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-50 w-full max-w-md bg-white rounded-lg shadow-lg border">
-        <div className="px-6 py-4 border-b"><h3 className="text-lg font-semibold">Create API Key</h3></div>
-        <div className="p-6">
-          <label className="block text-sm mb-1">Provider</label>
-          <input className="w-full px-3 py-2 border rounded mb-2" value={form.provider} onChange={e=>setForm(f=>({...f,provider:e.target.value}))} />
-          <label className="block text-sm mb-1">Key</label>
-          <input className="w-full px-3 py-2 border rounded mb-2" value={form.key} onChange={e=>setForm(f=>({...f,key:e.target.value}))} />
-          <label className="block text-sm mb-1">Credits</label>
-          <input type="number" className="w-full px-3 py-2 border rounded mb-2" value={form.credits} onChange={e=>setForm(f=>({...f,credits:Number(e.target.value)}))} />
-        </div>
-        <div className="px-6 py-3 border-t flex items-center justify-end gap-3">
-          <button type="button" onClick={onClose} className="px-4 py-2 border rounded-md">Cancel</button>
-          <button type="button" onClick={submit} disabled={creating} className="px-4 py-2 bg-purple-600 text-white rounded-md">{creating ? "Creating..." : "Create Key"}</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ---------- Main Dashboard Component ---------- */
 export default function SuperadminDashboard() {
   const navigate = useNavigate();
@@ -266,6 +344,10 @@ export default function SuperadminDashboard() {
   const [viewingSchool, setViewingSchool] = useState(null);
   const [editingSchool, setEditingSchool] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+
+  // new admin modal state
+  const [showAdminsModal, setShowAdminsModal] = useState(false);
+  const [adminsLoading, setAdminsLoading] = useState(false);
 
   function handleLogout() {
     localStorage.removeItem(TOKEN_KEY);
@@ -308,7 +390,8 @@ export default function SuperadminDashboard() {
 
   useEffect(() => { fetchSchools(1, schoolsLimit, ""); }, []);
 
-  async function handleCreateSchool(payload) {
+  // Modified: accepts optional admin argument
+  async function handleCreateSchool(payload, admin = null) {
     try {
       const res = await fetch(`${BASE_URL}/api/schools/`, {
         method: "POST",
@@ -317,6 +400,43 @@ export default function SuperadminDashboard() {
       });
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.message || JSON.stringify(body) || `HTTP ${res.status}`);
+
+      // created school object (backend dependent)
+      const createdSchool = body?.data ?? body ?? {};
+
+      // If admin details provided, create admin and attach to school
+      if (admin) {
+        try {
+          const adminPayload = {
+            fullName: admin.name, // send fullName to match controller
+            email: admin.email,
+            password: admin.password,
+            role: admin.role || "admin",
+            ...(admin.phone ? { phone: admin.phone } : {}),
+            schoolId: createdSchool._id || createdSchool.id || createdSchool.schoolId || undefined
+          };
+          // If for some reason school id is not present, still send (backend should validate)
+          const adminRes = await fetch(`${BASE_URL}/api/admin/onboard`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", ...getAuthHeader() },
+            body: JSON.stringify(adminPayload)
+          });
+          const adminBody = await adminRes.json().catch(()=>null);
+          if (!adminRes.ok) {
+            console.warn("Admin creation returned error", adminBody);
+            // show non-blocking alert but proceed to refresh schools
+            alert("School created but admin creation failed: " + (adminBody?.message || `HTTP ${adminRes.status}`));
+          } else {
+            // optionally notify success
+            // alert("Admin created for school.");
+          }
+        } catch (err) {
+          console.error("Admin creation failed", err);
+          alert("School created but admin creation failed: " + (err?.message || err));
+        }
+      }
+
+      // refresh list and switch tab
       await fetchSchools(1, schoolsLimit, schoolsSearch);
       setActiveTab("schools");
       return body;
@@ -371,6 +491,74 @@ export default function SuperadminDashboard() {
     alert("Create API key demo — not wired to backend. Replace this with your POST /api/apikeys.");
   }
 
+  // ---------------- Admins helpers ----------------
+  // fetch admins for a schoolId
+  async function fetchAdminsForSchool(schoolId) {
+    setAdminsLoading(true);
+    try {
+      // default attempt: users endpoint with query params
+      const url = `${BASE_URL}/api/users?schoolId=${encodeURIComponent(schoolId)}&role=admin`;
+      const res = await fetch(url, { headers: { "Content-Type": "application/json", ...getAuthHeader() } });
+      const body = await res.json().catch(()=>null);
+      if (!res.ok) throw new Error(body?.message || `HTTP ${res.status}`);
+      let arr = Array.isArray(body) ? body : (body.data ?? body.users ?? body.items ?? []);
+
+      // If the backend ignored filtering and returned all admins, filter client-side by schoolId
+      if (Array.isArray(arr)) {
+        const sid = (schoolId || "").toString();
+        arr = arr.filter(a => {
+          // a.schoolId might be an ObjectId or string or nested; normalize both to string
+          const aSid = (a.schoolId || a.school || a.school_id || "").toString();
+          return aSid === sid;
+        });
+      }
+
+      // If no results, try fallback endpoint schools/:id/admins
+      if (!arr || arr.length === 0) {
+        try {
+          const url2 = `${BASE_URL}/api/schools/${encodeURIComponent(schoolId)}/admins`;
+          const res2 = await fetch(url2, { headers: { "Content-Type": "application/json", ...getAuthHeader() } });
+          const body2 = await res2.json().catch(()=>null);
+          if (res2.ok) {
+            const arr2 = Array.isArray(body2) ? body2 : (body2.data ?? body2.admins ?? []);
+            // filter again just in case
+            const sid = (schoolId || "").toString();
+            return Array.isArray(arr2) ? arr2.filter(a => ((a.schoolId||a.school||a.school_id||"").toString() === sid)) : [];
+          }
+        } catch (err2) {
+          console.error("fetchAdminsForSchool fallback error", err2);
+        }
+      }
+
+      return arr;
+    } catch (err) {
+      console.error("fetchAdminsForSchool error", err);
+      // try fallback: schools/:id/admins if backend exposes it
+      try {
+        const url2 = `${BASE_URL}/api/schools/${encodeURIComponent(schoolId)}/admins`;
+        const res2 = await fetch(url2, { headers: { "Content-Type": "application/json", ...getAuthHeader() } });
+        const body2 = await res2.json().catch(()=>null);
+        if (!res2.ok) throw new Error(body2?.message || `HTTP ${res2.status}`);
+        let arr2 = Array.isArray(body2) ? body2 : (body2.data ?? body2.admins ?? []);
+        const sid = (schoolId || "").toString();
+        arr2 = Array.isArray(arr2) ? arr2.filter(a => ((a.schoolId||a.school||a.school_id||"").toString() === sid)) : [];
+        return arr2;
+      } catch (err2) {
+        console.error("fetchAdminsForSchool fallback error", err2);
+        throw err; // throw original
+      }
+    } finally {
+      setAdminsLoading(false);
+    }
+  }
+
+  // called when user clicks "Admins" button for a school row
+  function handleViewAdmins(school) {
+    setViewingSchool(school);   // keep view modal behavior consistent
+    setShowAdminsModal(true);
+  }
+
+  // ---------------- UI ----------------
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 text-gray-800">
       <div className="grid grid-cols-12 gap-0">
@@ -410,7 +598,6 @@ export default function SuperadminDashboard() {
             <div className="flex items-center gap-3">
               <button type="button" onClick={() => { setShowAddSchool(true); setActiveTab("schools"); }} className="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium shadow-sm hover:bg-indigo-700">＋ <span>Add School</span></button>
               <button type="button" onClick={() => { setShowAddApiKey(true); setActiveTab("apikeys"); }} className="px-3.5 py-2 bg-white border border-indigo-100 rounded-lg text-sm text-indigo-700 hover:bg-indigo-50">Add API Key</button>
-              
             </div>
           </div>
 
@@ -478,7 +665,11 @@ export default function SuperadminDashboard() {
                                 <td className="px-4 py-3">
                                   <div className="flex justify-end gap-2 text-xs">
                                     <button type="button" onClick={() => setViewingSchool(s)} className="px-2 py-1 rounded border border-indigo-100 text-indigo-600 hover:bg-indigo-50">View</button>
+
+                                    <button type="button" onClick={() => handleViewAdmins(s)} className="px-2 py-1 rounded border border-sky-100 text-sky-600 hover:bg-sky-50">Admins</button>
+
                                     <button type="button" onClick={() => { setEditingSchool(s); setShowEditModal(true); }} className="px-2 py-1 rounded border border-emerald-100 text-emerald-600 hover:bg-emerald-50">Edit</button>
+
                                     <button type="button" onClick={() => handleDeleteSchool(s._id || s.id)} className="px-2 py-1 rounded border border-rose-100 text-rose-600 hover:bg-rose-50">Delete</button>
                                   </div>
                                 </td>
@@ -519,6 +710,14 @@ export default function SuperadminDashboard() {
       {showAddApiKey && <ApiKeyModal onClose={() => setShowAddApiKey(false)} onCreate={handleCreateApiKey} />}
       {viewingSchool && <ViewSchoolModal school={viewingSchool} onClose={() => setViewingSchool(null)} />}
       {showEditModal && <EditSchoolModal school={editingSchool} onClose={() => { setShowEditModal(false); setEditingSchool(null); }} onSave={handleSaveSchool} />}
+
+      {showAdminsModal && viewingSchool && (
+        <AdminsModal
+          school={viewingSchool}
+          onClose={() => setShowAdminsModal(false)}
+          fetchAdminsFn={fetchAdminsForSchool}
+        />
+      )}
     </div>
   );
 }
