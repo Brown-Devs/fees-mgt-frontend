@@ -11,42 +11,43 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+  try {
+    const payload = { email: (email || "").trim().toLowerCase(), password };
+    console.log("LOGIN payload:", payload);
 
-    try {
-      const res = await api.post("/api/auth/login", {
-        email,
-        password,
-      });
+    const res = await api.post("/api/auth/login", payload);
 
-      login(res.data.user, res.data.token);
+    console.log("LOGIN raw response:", res);
+    // normalize token/user paths (support both {token,user} and {data:{token,user}})
+    const body = res.data || {};
+    const token = body.token || body.data?.token || body.result?.token;
+    const user = body.user || body.data?.user || body.result?.user;
 
-      // Redirect based on role
-      switch (res.data.user.role) {
-        case "superadmin":
-          navigate("/superadmin/dashboard");
-          break;
-        case "admin":
-          navigate("/admin/dashboard");
-          break;
-        case "accountant":
-          navigate("/accountant/dashboard");
-          break;
-        case "teacher":
-          navigate("/teacher/dashboard");
-          break;
-        case "parent":
-          navigate("/parent/dashboard");
-          break;
-        default:
-          navigate("/");
-      }
-
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+    if (!token || !user) {
+      console.warn("Unexpected login response shape:", body);
+      throw new Error("Unexpected login response");
     }
-  };
+
+    login(user, token);
+
+    // redirect based on role
+    switch (user.role) {
+      case "superadmin": navigate("/superadmin/dashboard"); break;
+      case "admin": navigate("/admin/dashboard"); break;
+      case "accountant": navigate("/accountant/dashboard"); break;
+      case "teacher": navigate("/teacher/dashboard"); break;
+      case "parent": navigate("/parent/dashboard"); break;
+      default: navigate("/");
+    }
+  } catch (err) {
+    console.error("LOGIN error (detailed):", err);
+    setError(err.response?.data?.message || err.message || "Login failed");
+  }
+};
+
 
   return (
     <div className="h-screen flex items-center justify-center bg-gray-100 px-4">

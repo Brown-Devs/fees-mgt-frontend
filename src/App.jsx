@@ -1,26 +1,56 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/auth/login";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AdminSchool from "./pages/admin/AdminSchool";
-import AdminLayout from "./components/admin/AdminLayout";
+import AdminLayout from "./pages/admin/AdminLayout";
+import Unauthorized from "./pages/Unauthorized";
 
 import SuperadminDashboard from "./pages/Superadmin/Dashboard";
+
+import AdminDashboard from "./pages/admin/Dashboard";
+import SchoolOnboarding from "./pages/admin/Onboarding/SchoolOnboarding";
+import BranchesList from "./pages/admin/Branches/BranchesList";
+import StudentsList from "./pages/admin/Students/StudentsList";
+import FeeSetup from "./pages/admin/Fees/FeeSetup";
+import UserList from "./pages/admin/Users/UserList";
 
 function App() {
   return (
     <Routes>
-      {/* Public route */}
-      <Route
-  path="/admin"
-  element={
-    <ProtectedRoute allowRoles={["admin", "superadmin"]}>
-      <AdminLayout />
-    </ProtectedRoute>
-  }
-></Route>
+      {/* Public */}
       <Route path="/login" element={<Login />} />
 
-      {/* Parent */}
+      {/* SUPERADMIN */}
+      <Route
+        path="/superadmin/dashboard"
+        element={
+          <ProtectedRoute allowRoles={["superadmin"]}>
+            <SuperadminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ADMIN PANEL (Layout + nested routes using Outlet) */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowRoles={["admin", "superadmin"]}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        {/* Nested admin pages */}
+        <Route index element={<AdminDashboard />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="onboarding" element={<SchoolOnboarding />} />
+        <Route path="branches" element={<BranchesList />} />
+        <Route path="students" element={<StudentsList />} />
+        <Route path="fees" element={<FeeSetup />} />
+        <Route path="users" element={<UserList />} />
+      </Route>
+
+      <Route path="/unauthorized" element={<Unauthorized />} />
+
+      {/* PARENT */}
       <Route
         path="/parent/dashboard"
         element={
@@ -30,17 +60,7 @@ function App() {
         }
       />
 
-      {/* Admin */}
-      <Route
-        path="/admin/dashboard"
-        element={
-          <ProtectedRoute allowRoles={["admin"]}>
-            <AdminSchool />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Teacher */}
+      {/* TEACHER */}
       <Route
         path="/teacher/dashboard"
         element={
@@ -50,7 +70,7 @@ function App() {
         }
       />
 
-      {/* Accountant */}
+      {/* ACCOUNTANT */}
       <Route
         path="/accountant/dashboard"
         element={
@@ -60,15 +80,8 @@ function App() {
         }
       />
 
-      {/* SUPERADMIN — Fully working dashboard */}
-      <Route
-        path="/superadmin/dashboard"
-        element={
-          <ProtectedRoute allowRoles={["superadmin"]}>
-            <SuperadminDashboard />
-          </ProtectedRoute>
-        }
-      />
+      {/* Default / Not Found */}
+      <Route path="*" element={<div>404 - Page Not Found</div>} />
     </Routes>
   );
 }
