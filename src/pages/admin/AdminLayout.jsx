@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { clearToken } from "../../lib/api";
+import logo from "../../assets/logo.png";
 import {
   HiOutlineHome,
   HiOutlineBuildingOffice2,
@@ -53,14 +54,12 @@ function Topbar({ schoolName }) {
   }
 
   return (
-    <header className="flex items-center justify-between gap-4 p-3 bg-white border-b">
-      <div className="flex items-center gap-3">
+    <header className="flex items-center justify-between gap-6 p-3 bg-white border-b">
+      <div className="flex items-center gap-5">
         {/* compact logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-apple-50 to-apple-100 flex items-center justify-center text-apple-700 font-bold">S</div>
+        <div className="flex items-center gap-6">
           <div className="hidden md:block">
-            <div className="text-sm font-semibold text-apple-700">{schoolName || "School Admin"}</div>
-            <div className="text-xs text-slate-400">Admin Dashboard</div>
+            <div className="text-l text-black">Dashboard</div>
           </div>
         </div>
 
@@ -80,10 +79,6 @@ function Topbar({ schoolName }) {
         <button className="relative p-2 rounded-md hover:bg-slate-100" title="Notifications">
           <HiOutlineBell className="w-5 h-5 text-slate-600" />
           <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-semibold bg-rose-500 text-white rounded-full">3</span>
-        </button>
-
-        <button className="p-2 rounded-md hover:bg-slate-100" title="Help">
-          <HiOutlineDocumentText className="w-5 h-5 text-slate-600" />
         </button>
 
         {/* profile */}
@@ -106,14 +101,21 @@ function Sidebar({ collapsed, setCollapsed }) {
       <div className="h-full flex flex-col">
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={`rounded-md ${collapsed ? 'w-8 h-8' : 'w-10 h-10'} bg-apple-50 flex items-center justify-center text-apple-700 font-bold`}>S</div>
-            {!collapsed && <div className="text-sm font-semibold text-apple-700">School Admin</div>}
+            <div className="flex items-center gap-3">
+  <div className="hidden md:block">
+    <img
+      src={logo}
+      alt="School Logo"
+      className="h-23 w-auto object-contain"
+    />
+  </div>
+</div>
+
           </div>
           <button onClick={() => setCollapsed(!collapsed)} className="text-slate-400 hover:text-slate-600 hidden md:block">🡸</button>
         </div>
 
         <nav className="flex-1 overflow-auto px-2 pb-6">
-          <div className="text-xs text-slate-400 uppercase px-3 pb-2 hidden md:block">Main</div>
           <ul className="space-y-1">
             {MENU.map((m) => (
               <li key={m.key}>
@@ -133,11 +135,7 @@ function Sidebar({ collapsed, setCollapsed }) {
           </ul>
         </nav>
 
-        <div className="p-3 border-t">
-          {!collapsed && (
-            <div className="text-xs text-slate-500">Tip: Use the menu to navigate</div>
-          )}
-        </div>
+       
       </div>
     </aside>
   );
@@ -152,26 +150,6 @@ export default function AdminLayout({ schoolName }) {
       <div className="flex-1 flex flex-col min-h-screen">
         <Topbar schoolName={schoolName} />
         <main className="p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-xl p-4 shadow-sm border">
-              <div className="text-xs text-slate-400">Enrolled Students</div>
-              <div className="mt-2 text-2xl font-bold text-apple-700">1,245</div>
-            </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border">
-              <div className="text-xs text-slate-400">Active Teachers</div>
-              <div className="mt-2 text-2xl font-bold text-slate-700">86</div>
-            </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border">
-              <div className="text-xs text-slate-400">Pending Fees</div>
-              <div className="mt-2 text-2xl font-bold text-rose-600">₹ 42,300</div>
-            </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border">
-              <div className="text-xs text-slate-400">Branches</div>
-              <div className="mt-2 text-2xl font-bold text-slate-700">3</div>
-            </div>
-          </div>
-
-
           <div className="min-h-[56vh]">
             <Outlet />
           </div>
