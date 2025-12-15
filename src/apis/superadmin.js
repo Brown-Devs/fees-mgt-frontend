@@ -1,4 +1,4 @@
-import api from './axios'; // axios with baseURL
+import api from './axios'; 
 
 export const getSchools = (q = {}) => api.get('/api/schools', { params: q });
 export const createSchool = (body) => api.post('/api/schools', body);
