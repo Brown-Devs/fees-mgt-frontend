@@ -30,16 +30,14 @@ export default function Login() {
         throw new Error("Invalid login response");
       }
 
-      // save auth
       login(user, token);
 
-      // redirect by role
       switch (user.role) {
         case "superadmin":
           navigate("/superadmin/dashboard");
           break;
         case "admin":
-          navigate("/admin"); // IMPORTANT: admin dashboard root
+          navigate("/admin"); 
           break;
         case "accountant":
           navigate("/accountant/dashboard");

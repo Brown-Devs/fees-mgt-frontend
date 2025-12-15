@@ -3,8 +3,8 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);      // full user object
-  const [token, setToken] = useState(null);    // JWT token
+  const [user, setUser] = useState(null);      
+  const [token, setToken] = useState(null);    
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
