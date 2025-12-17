@@ -9,11 +9,15 @@ import SuperadminDashboard from "./pages/Superadmin/Dashboard";
 import AdminDashboard from "./pages/admin/Dashboard";
 import SchoolOnboarding from "./pages/admin/Onboarding/SchoolOnboarding";
 import BranchesList from "./pages/admin/Branches/BranchesList";
-import StudentsList from "./pages/admin/Students/StudentsList";
 import FeeSetup from "./pages/admin/Fees/FeeSetup";
 import UserList from "./pages/admin/Users/UserList";
 import ClassList from "./pages/admin/Class/ClassList";
 
+// NEW STUDENT MODULE (correct paths)
+import StudentListPage from "./modules/students/pages/StudentListPage";
+import StudentCreatePage from "./modules/students/pages/StudentCreatePage";
+import StudentEditPage from "./modules/students/pages/StudentEditPage";
+import StudentDetailPage from "./modules/students/pages/StudentDetailPage";
 
 function App() {
   return (
@@ -31,7 +35,7 @@ function App() {
         }
       />
 
-      {/* ADMIN PANEL (Layout + nested routes using Outlet) */}
+      {/* ADMIN PANEL */}
       <Route
         path="/admin"
         element={
@@ -46,9 +50,14 @@ function App() {
         <Route path="onboarding" element={<SchoolOnboarding />} />
         <Route path="class" element={<ClassList />} />
         <Route path="branches" element={<BranchesList />} />
-        <Route path="students" element={<StudentsList />} />
         <Route path="fees" element={<FeeSetup />} />
         <Route path="users" element={<UserList />} />
+
+        {/* STUDENT MODULE ROUTES */}
+        <Route path="students" element={<StudentListPage />} />
+        <Route path="students/new" element={<StudentCreatePage />} />
+        <Route path="students/:studentId/edit" element={<StudentEditPage />} />
+        <Route path="students/:studentId" element={<StudentDetailPage />} />
       </Route>
 
       <Route path="/unauthorized" element={<Unauthorized />} />
@@ -83,7 +92,7 @@ function App() {
         }
       />
 
-      {/* Default / Not Found */}
+      {/* Default */}
       <Route path="*" element={<div>404 - Page Not Found</div>} />
     </Routes>
   );

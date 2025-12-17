@@ -19,34 +19,34 @@ const FeeRules = () => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch Fee Heads
   const fetchFeeHeads = async () => {
     try {
       const res = await api.get("/api/fees/heads");
       setFeeHeads(res.data);
     } catch (err) {
-      console.error(err);
+      console.error("fetchFeeHeads error:", err);
     }
   };
 
-  // Fetch Classes
   const fetchClasses = async () => {
     try {
-      const res = await api.get("/api/classes");
-      setClasses(res.data);
+      const schoolId = localStorage.getItem("schoolId");
+      const res = await api.get("/api/classes", {
+        params: { schoolId },
+      });
+      setClasses(res.data.data || res.data);
     } catch (err) {
-      console.error(err);
+      console.error("fetchClasses error:", err);
     }
   };
 
-  // Fetch Fee Rules
   const fetchRules = async () => {
     setLoading(true);
     try {
       const res = await api.get("/api/fees/rules");
       setRules(res.data);
     } catch (err) {
-      console.error(err);
+      console.error("fetchRules error:", err);
     }
     setLoading(false);
   };
@@ -62,8 +62,18 @@ const FeeRules = () => {
     setSubmitting(true);
 
     try {
-      const res = await api.post("/api/fees/rules", form);
+      const payload = { ...form };
+
+      // ⭐ For global scope, no class reference
+      if (payload.scope === "global") {
+        payload.scopeRefId = "";
+      }
+
+      const res = await api.post("/api/fees/rules", payload);
+
+      // ⭐ Backend now returns populated rule
       setRules((prev) => [...prev, res.data]);
+
       alert("Fee rule created successfully");
 
       setForm({
@@ -76,7 +86,7 @@ const FeeRules = () => {
         dueDateDay: 10,
       });
     } catch (err) {
-      console.error(err);
+      console.error("createFeeRule error:", err);
       alert(err.response?.data?.message || "Failed to create rule");
     }
 
@@ -104,8 +114,9 @@ const FeeRules = () => {
         <input
           type="text"
           value={form.academicYear}
-          onChange={(e) => setForm({ ...form, academicYear: e.target.value })}
-          className="input"
+          onChange={(e) =>
+            setForm({ ...form, academicYear: e.target.value })
+          }
           style={{
             width: "100%",
             padding: "10px",
@@ -119,7 +130,9 @@ const FeeRules = () => {
         <label>Fee Head *</label>
         <select
           value={form.feeHeadId}
-          onChange={(e) => setForm({ ...form, feeHeadId: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, feeHeadId: e.target.value })
+          }
           required
           style={{
             width: "100%",
@@ -142,7 +155,9 @@ const FeeRules = () => {
         <input
           type="number"
           value={form.amount}
-          onChange={(e) => setForm({ ...form, amount: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, amount: e.target.value })
+          }
           required
           style={{
             width: "100%",
@@ -157,7 +172,9 @@ const FeeRules = () => {
         <label>Frequency *</label>
         <select
           value={form.frequency}
-          onChange={(e) => setForm({ ...form, frequency: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, frequency: e.target.value })
+          }
           style={{
             width: "100%",
             padding: "10px",
@@ -175,7 +192,14 @@ const FeeRules = () => {
         <label>Scope *</label>
         <select
           value={form.scope}
-          onChange={(e) => setForm({ ...form, scope: e.target.value })}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              scope: e.target.value,
+              scopeRefId:
+                e.target.value === "class" ? form.scopeRefId : "",
+            })
+          }
           style={{
             width: "100%",
             padding: "10px",
@@ -194,7 +218,12 @@ const FeeRules = () => {
             <label>Class *</label>
             <select
               value={form.scopeRefId}
-              onChange={(e) => setForm({ ...form, scopeRefId: e.target.value })}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  scopeRefId: e.target.value,
+                })
+              }
               required
               style={{
                 width: "100%",
@@ -219,7 +248,9 @@ const FeeRules = () => {
         <input
           type="number"
           value={form.dueDateDay}
-          onChange={(e) => setForm({ ...form, dueDateDay: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, dueDateDay: e.target.value })
+          }
           style={{
             width: "100%",
             padding: "10px",
@@ -267,25 +298,35 @@ const FeeRules = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="6" style={{ padding: "20px", textAlign: "center" }}>
+              <td
+                colSpan="6"
+                style={{ padding: "20px", textAlign: "center" }}
+              >
                 Loading...
               </td>
             </tr>
           ) : rules.length === 0 ? (
             <tr>
-              <td colSpan="6" style={{ padding: "20px", textAlign: "center" }}>
+              <td
+                colSpan="6"
+                style={{ padding: "20px", textAlign: "center" }}
+              >
                 No rules found
               </td>
             </tr>
           ) : (
             rules.map((rule) => (
               <tr key={rule._id}>
-                <td style={{ padding: "10px" }}>{rule.feeHead?.name}</td>
+                <td style={{ padding: "10px" }}>
+                  {rule.feeHeadId?.name || ""}
+                </td>
                 <td style={{ padding: "10px" }}>{rule.amount}</td>
                 <td style={{ padding: "10px" }}>{rule.frequency}</td>
                 <td style={{ padding: "10px" }}>{rule.scope}</td>
                 <td style={{ padding: "10px" }}>
-                  {rule.scope === "class" ? rule.class?.name : "-"}
+                  {rule.scope === "class"
+                    ? rule.scopeRefId?.name || ""
+                    : "-"}
                 </td>
                 <td style={{ padding: "10px" }}>{rule.academicYear}</td>
               </tr>

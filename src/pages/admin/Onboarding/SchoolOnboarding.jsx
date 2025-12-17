@@ -30,14 +30,17 @@ export default function SchoolOnboarding() {
       try {
         const res = await api.get("/api/schools/me");
         setSchool(res.data.data);
+        localStorage.setItem("schoolId", res.data.data._id);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     }
+    
     fetchSchool();
   }, []);
+  
 
   /* ================= COMPLETE ONBOARDING ================= */
   async function completeOnboarding() {
