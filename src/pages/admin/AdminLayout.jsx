@@ -56,14 +56,12 @@ function Topbar({ schoolName }) {
   return (
     <header className="flex items-center justify-between gap-6 p-3 bg-white border-b">
       <div className="flex items-center gap-5">
-        {/* compact logo */}
         <div className="flex items-center gap-6">
           <div className="hidden md:block">
             <div className="text-l text-black">Dashboard</div>
           </div>
         </div>
 
-        {/* search */}
         <div className="ml-4">
           <div className="relative">
             <input
@@ -81,7 +79,6 @@ function Topbar({ schoolName }) {
           <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-semibold bg-rose-500 text-white rounded-full">3</span>
         </button>
 
-        {/* profile */}
         <div className="flex items-center gap-3">
           <div className="text-right hidden md:block">
             <div className="text-sm font-medium">Pooran</div>
