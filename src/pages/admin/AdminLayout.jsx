@@ -31,7 +31,7 @@ const MENU = [
   { key: "dashboard",      label: "Dashboard",         to: "/admin",                 icon: <HiOutlineHome /> },
   { key: "school",         label: "School Details",    to: "/admin/onboarding",      icon: <HiOutlineBuildingOffice2 /> },
   { key: "fees",           label: "Fees Management",   to: "/admin/fees",            icon: <HiOutlineBanknotes /> },
-  { key: "class",          label: "Class",             to: "/admin/branches",        icon: <HiOutlineUserGroup /> },
+  { key: "class", label: "Class", to: "/admin/class", icon: <HiOutlineUserGroup /> },
   { key: "student",        label: "Student",           to: "/admin/students",        icon: <HiOutlineUser /> },
   { key: "payment",        label: "Payment",           to: "/admin/payment",         icon: <HiOutlineCreditCard /> },
   { key: "income",         label: "Income",            to: "/admin/income",          icon: <HiOutlineChartBar /> },

@@ -61,38 +61,40 @@ export default function Branches({ schoolId }) {
   }
 
   async function saveBranch() {
-    if (!form.name.trim()) {
-      alert("Branch name is required");
-      return;
-    }
-
-    setSaving(true);
-    try {
-      if (editingId) {
-        await api.put(`/api/branches/${editingId}`, {
-  branchName: form.name,
-  address: form.address,
-  contactNumber: form.contactPhone,
-});
-
-      } else {
-        await api.post("/api/branches", {
-  branchName: form.name,
-  address: form.address,
-  contactNumber: form.contactPhone,
-  schoolId,
-});
-
-      }
-      resetForm();
-      fetchBranches();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to save branch");
-    } finally {
-      setSaving(false);
-    }
+  if (!form.name.trim()) {
+    alert("Branch name is required");
+    return;
   }
+
+  setSaving(true);
+  try {
+    const payload = {
+      name: form.name,
+      code: form.code,
+      address: form.address,
+      contactPhone: form.contactPhone,
+      contactEmail: form.contactEmail,
+    };
+
+    if (editingId) {
+      await api.put(`/api/branches/${editingId}`, payload);
+    } else {
+      await api.post("/api/branches", {
+        ...payload,
+        schoolId,
+      });
+    }
+
+    resetForm();
+    fetchBranches();
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save branch");
+  } finally {
+    setSaving(false);
+  }
+}
+
 
   async function deleteBranch(id) {
     if (!confirm("Deactivate this branch?")) return;

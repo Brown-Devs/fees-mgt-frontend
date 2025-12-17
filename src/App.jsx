@@ -12,6 +12,8 @@ import BranchesList from "./pages/admin/Branches/BranchesList";
 import StudentsList from "./pages/admin/Students/StudentsList";
 import FeeSetup from "./pages/admin/Fees/FeeSetup";
 import UserList from "./pages/admin/Users/UserList";
+import ClassList from "./pages/admin/Class/ClassList";
+
 
 function App() {
   return (
@@ -42,6 +44,7 @@ function App() {
         <Route index element={<AdminDashboard />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="onboarding" element={<SchoolOnboarding />} />
+        <Route path="class" element={<ClassList />} />
         <Route path="branches" element={<BranchesList />} />
         <Route path="students" element={<StudentsList />} />
         <Route path="fees" element={<FeeSetup />} />
