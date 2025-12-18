@@ -13,10 +13,11 @@ const StudentDetailPage = () => {
   const [activeTab, setActiveTab] = useState("profile");
 
   const [feeData, setFeeData] = useState({});
+  const [totalFee, setTotalFee] = useState(0);
   const [payments, setPayments] = useState([]);
   const [paymentModal, setPaymentModal] = useState(false);
 
-  // ✅ Load student
+  // Load student
   useEffect(() => {
     if (!studentId || studentId === "new" || studentId === "create") {
       setLoading(false);
@@ -37,7 +38,7 @@ const StudentDetailPage = () => {
     loadStudent();
   }, [studentId]);
 
-  // ✅ Load fee structure AFTER student loads
+  // Load fee structure once student is available
   useEffect(() => {
     if (!student?._id) return;
 
@@ -46,18 +47,31 @@ const StudentDetailPage = () => {
         const res = await api.get("/api/fees/structure", {
           params: {
             classId: student.classId?._id,
-            session: student.admissionSession,
-          },
+            session: student.admissionSession
+          }
         });
 
-        const structure = res.data.data;
+        const structure = res.data?.data;
+        const obj = {};
 
-        const feeObj = {};
         structure?.items?.forEach((item) => {
-          feeObj[item.feeHeadId.name] = item.amount;
+          if (item?.feeHeadId?.name) {
+            obj[item.feeHeadId.name] = item.amount;
+          }
         });
 
-        setFeeData(feeObj);
+        // Add transport fee
+        if (student.usesTransport) {
+          obj["Transport Fee"] = student.transportFee || 0;
+        }
+
+        setFeeData(obj);
+
+        const total = Object.values(obj).reduce(
+          (acc, val) => acc + Number(val || 0),
+          0
+        );
+        setTotalFee(total);
       } catch (err) {
         console.error("Failed to load fee structure", err);
       }
@@ -277,15 +291,15 @@ const StudentDetailPage = () => {
       )}
 
       {/* FEES TAB */}
-      {/* FEES TAB */}
-{activeTab === "fees" && (
-  <FeeDetails
-    student={student}
-    feeData={feeData}
-    payments={payments}
-    onRecordPayment={() => setPaymentModal(true)}
-  />
-)}
+      {activeTab === "fees" && (
+        <FeeDetails
+          student={student}
+          feeData={feeData}
+          totalFee={totalFee}
+          payments={payments}
+          onRecordPayment={() => setPaymentModal(true)}
+        />
+      )}
 
     </div>
   );

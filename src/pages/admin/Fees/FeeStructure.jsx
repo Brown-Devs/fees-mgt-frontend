@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../../../apis/axios"; // adjust if needed
+import api from "../../../apis/axios";
 
 const FeeStructure = () => {
   const [classes, setClasses] = useState([]);
@@ -15,7 +15,7 @@ const FeeStructure = () => {
       try {
         const schoolId = localStorage.getItem("schoolId");
         const res = await api.get("/api/classes", { params: { schoolId } });
-        setClasses(res.data?.data || []);
+        setClasses(res.data?.data || res.data || []);
       } catch (err) {
         console.error("Failed to load classes", err);
       }
@@ -28,7 +28,7 @@ const FeeStructure = () => {
     const loadFeeHeads = async () => {
       try {
         const res = await api.get("/api/fees/heads");
-        setFeeHeads(res.data?.data || []);
+        setFeeHeads(res.data?.data || res.data || []);
       } catch (err) {
         console.error("Failed to load fee heads", err);
       }
@@ -36,7 +36,7 @@ const FeeStructure = () => {
     loadFeeHeads();
   }, []);
 
-  // Load existing fee structure
+  // Load existing fee structure for selected class + session
   useEffect(() => {
     if (!selectedClass) return;
 
@@ -122,12 +122,11 @@ const FeeStructure = () => {
         </select>
       </div>
 
-      {/* Loading indicator */}
       {loading && (
         <p className="text-gray-500 mb-4">Loading fee structure...</p>
       )}
 
-      {/* Fee Heads */}
+      {/* Fee Heads with amounts */}
       <div className="space-y-4">
         {feeHeads?.length === 0 && (
           <p className="text-gray-500">No fee heads found. Add some first.</p>
@@ -154,6 +153,7 @@ const FeeStructure = () => {
       <button
         onClick={handleSave}
         className="mt-6 bg-[#0a1a44] text-white px-6 py-2 rounded-lg"
+        disabled={!selectedClass}
       >
         Save Fee Structure
       </button>

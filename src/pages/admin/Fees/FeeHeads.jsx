@@ -11,7 +11,8 @@ const FeeHeads = () => {
     setLoading(true);
     try {
       const res = await api.get("/api/fees/heads");
-      setFeeHeads(res.data);
+      // assuming backend returns { data: [...] } OR direct array
+      setFeeHeads(res.data?.data || res.data || []);
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || "Failed to load fee heads");
@@ -27,8 +28,10 @@ const FeeHeads = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await api.post("api/fees/heads", form);
-      setFeeHeads((prev) => [...prev, res.data]);
+      const res = await api.post("/api/fees/heads", form);
+      // assuming backend returns created head in res.data or res.data.data
+      const newHead = res.data?.data || res.data;
+      setFeeHeads((prev) => [...prev, newHead]);
       setForm({ name: "", code: "", description: "" });
     } catch (err) {
       console.error(err);
