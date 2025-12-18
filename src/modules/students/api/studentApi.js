@@ -1,47 +1,32 @@
-import axios from "../../../apis/axios";
+import api from "../../../apis/axios";
 
-const BASE_URL = "/api/students";
+export const fetchStudents = (params) =>
+  api.get("/api/students", { params });
 
-export const fetchStudents = async (params) => {
-  const res = await axios.get(BASE_URL, { params });
-  return res.data;
-};
+export const fetchStudent = (id) =>
+  api.get(`/api/students/${id}`);
 
-export const fetchStudentById = async (studentId) => {
-  const res = await axios.get(`${BASE_URL}/${studentId}`);
-  return res.data;
-};
-
-export const createStudent = async (formData) => {
-  const res = await axios.post(BASE_URL, formData, {
+export const createStudent = (formData) =>
+  api.post("/api/students", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  return res.data;
-};
 
-export const updateStudent = async (studentId, formData) => {
-  const res = await axios.put(`${BASE_URL}/${studentId}`, formData, {
+export const updateStudent = (id, formData) =>
+  api.put(`/api/students/${id}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  return res.data;
-};
 
-export const deactivateStudent = async (studentId) => {
-  const res = await axios.delete(`${BASE_URL}/${studentId}`);
-  return res.data;
-};
+export const deactivateStudent = (id) =>
+  api.delete(`/api/students/${id}`);
 
-export const upgradeStudent = async (studentId, payload) => {
-  const res = await axios.put(`${BASE_URL}/${studentId}/upgrade`, payload);
-  return res.data;
-};
+export const upgradeStudent = (id, payload) =>
+  api.put(`/api/students/${id}/upgrade`, payload);
 
-export const fetchStudentFeesInfo = async (studentId) => {
-  const res = await axios.get(`${BASE_URL}/${studentId}/fees`);
-  return res.data;
-};
+export const fetchStudentFees = (id) =>
+  api.get(`/api/students/${id}/fees`);
 
-export const fetchStudentAttendance = async (studentId) => {
-  const res = await axios.get(`${BASE_URL}/${studentId}/attendance`);
-  return res.data;
-};
+export const fetchStudentAttendance = (id) =>
+  api.get(`/api/students/${id}/attendance`);
+
+export const addStudentAttendance = (id, payload) =>
+  api.post(`/api/students/${id}/attendance`, payload);
