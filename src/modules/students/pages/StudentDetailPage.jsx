@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchStudent } from "../api/studentApi";
 import FeeDetails from "../components/FeeDetails";
+import ParentDetails from "../components/ParentDetails";
 import api from "../../../apis/axios";
 
 const StudentDetailPage = () => {
@@ -151,7 +152,7 @@ const StudentDetailPage = () => {
 
       {/* TABS */}
       <div className="flex gap-6 border-b mb-6 no-print">
-        {["profile", "attendance", "fees"].map((tab) => (
+        {["profile", "attendance", "fees", "parent"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -299,6 +300,16 @@ const StudentDetailPage = () => {
           payments={payments}
           onRecordPayment={() => setPaymentModal(true)}
         />
+      )}
+
+      {/* PARENT TAB */}
+      {activeTab === "parent" && (
+        <div className="bg-white shadow rounded-xl p-6">
+          <h4 className="text-lg font-semibold text-[#0a1a44] mb-4">
+            Parent Login Details
+          </h4>
+          <ParentDetails studentId={student._id} />
+        </div>
       )}
 
     </div>

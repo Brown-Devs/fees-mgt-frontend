@@ -149,11 +149,13 @@ const StudentEditPage = () => {
       </h2>
 
       <StudentForm
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        submitting={submitting}
-        classes={classes}
-      />
+  initialValues={initialValues}
+  onSubmit={handleSubmit}
+  submitting={submitting}
+  classes={classes}
+  isEdit={true}
+/>
+
     </div>
   );
 };

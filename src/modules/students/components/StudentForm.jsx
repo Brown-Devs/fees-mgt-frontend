@@ -7,6 +7,7 @@ export default function StudentForm({
   onSubmit,
   submitting,
   classes,
+  isEdit = false,
 }) {
   const [routes, setRoutes] = useState([]);
   const [form, setForm] = useState(
@@ -171,12 +172,14 @@ const handleRouteChange = (e) => {
           <div>
             <label className="label">Admission No</label>
             <input
-              name="admissionNo"
-              value={form.admissionNo}
-              onChange={handleChange}
-              className="input"
-              required
-            />
+  name="admissionNo"
+  value={form.admissionNo}
+  onChange={handleChange}
+  disabled={isEdit}   
+  className={`input ${isEdit ? "bg-gray-100 cursor-not-allowed" : ""}`}
+  required
+/>
+
           </div>
 
           <div>
@@ -346,12 +349,14 @@ const handleRouteChange = (e) => {
           <div>
             <label className="label">Roll No</label>
             <input
-              name="rollNo"
-              value={form.rollNo}
-              onChange={handleChange}
-              className="input"
-              required
-            />
+  name="rollNo"
+  value={form.rollNo}
+  onChange={handleChange}
+  disabled={isEdit}   
+  className={`input ${isEdit ? "bg-gray-100 cursor-not-allowed" : ""}`}
+  required
+/>
+
           </div>
         </div>
       </div>

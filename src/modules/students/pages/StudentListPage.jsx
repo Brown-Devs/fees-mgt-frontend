@@ -1,5 +1,4 @@
 // src/modules/students/pages/StudentListPage.jsx
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchStudents } from "../api/studentApi";
@@ -8,7 +7,6 @@ import api from "../../../apis/axios";
 const StudentListPage = () => {
   const navigate = useNavigate();
 
-  /* ================= STATE ================= */
   const [students, setStudents] = useState([]);
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -16,19 +16,17 @@ const ClassList = () => {
 
   // Fetch classes
   const fetchClasses = async () => {
-    setLoading(true);
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const schoolId = user?.schoolId;
+  setLoading(true);
+  try {
+    const res = await api.get("/api/classes");
+    setClasses(res.data.data);
+  } catch (err) {
+    console.error("Failed to load classes", err);
+    alert("Failed to load classes");
+  }
+  setLoading(false);
+};
 
-      const res = await api.get(`/api/classes?schoolId=${schoolId}`);
-      setClasses(res.data.data);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load classes");
-    }
-    setLoading(false);
-  };
 
   useEffect(() => {
     fetchClasses();
