@@ -3,7 +3,7 @@ import { clearToken } from "../../lib/api";
 import logo from "../../assets/logo.png";
 import { HiOutlineCreditCard } from "react-icons/hi2";
 
-export default function ParentLayout() {
+export default function AccountantLayout() {
   const navigate = useNavigate();
 
   const logout = () => {
@@ -21,14 +21,14 @@ export default function ParentLayout() {
           <div className="px-4 py-6 flex flex-col items-center gap-4 border-b">
             <img src={logo} alt="School Logo" className="h-14" />
             <span className="text-sm font-semibold text-slate-600">
-              Parent Panel
+              Accountant Panel
             </span>
           </div>
 
           {/* Menu */}
           <nav className="flex-1 px-3 py-4">
             <NavLink
-              to="/parent/payments/make"
+              to="/accountant/payments/verify"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
                   isActive
@@ -38,7 +38,7 @@ export default function ParentLayout() {
               }
             >
               <HiOutlineCreditCard className="text-lg" />
-              Make Payment
+              Verify Payment
             </NavLink>
           </nav>
 

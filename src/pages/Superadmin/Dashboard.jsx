@@ -1,4 +1,3 @@
-// src/pages/Superadmin/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +13,6 @@ function formatDate(s) {
   try { return new Date(s).toLocaleString(); } catch (e) { return s || "-"; }
 }
 
-/* ---------- Card ---------- */
 function Card({ title, value, subtitle }) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-100 h-full p-4 hover:shadow-md transition-shadow">
@@ -34,17 +32,13 @@ function Card({ title, value, subtitle }) {
   );
 }
 
-/* Dummy usage bar data */
 const DUMMY_USAGE = [50, 120, 90, 30, 200, 140, 80];
-
-/* ---------- AddSchoolModal (with optional admin) ---------- */
 function AddSchoolModal({ onClose = () => {}, onCreate = async () => {} }) {
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
     name: "", code: "", address: "", city: "", state: "", pin: "", contactEmail: "", contactPhone: ""
   });
 
-  // admin creation toggles & fields
   const [createAdmin, setCreateAdmin] = useState(false);
   const [admin, setAdmin] = useState({ name: "", email: "", password: "", role: "admin", phone: "" });
 
@@ -66,15 +60,12 @@ function AddSchoolModal({ onClose = () => {}, onCreate = async () => {} }) {
       };
 
       const adminPayload = createAdmin ? { ...admin } : null;
-
-      // parent handles creating school and admin
       await onCreate(payload, adminPayload);
       onClose();
     } catch (err) {
       alert("Create failed: " + (err?.message || err));
     } finally { setCreating(false); }
   }
-
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
@@ -85,14 +76,11 @@ function AddSchoolModal({ onClose = () => {}, onCreate = async () => {} }) {
             <div><label className="block text-sm mb-1">Name *</label><input className="w-full px-3 py-2 border rounded" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} /></div>
             <div><label className="block text-sm mb-1">Code *</label><input className="w-full px-3 py-2 border rounded" value={form.code} onChange={e=>setForm(f=>({...f,code:e.target.value}))} /></div>
             <div><label className="block text-sm mb-1">Address *</label><input className="w-full px-3 py-2 border rounded" value={form.address} onChange={e=>setForm(f=>({...f,address:e.target.value}))} /></div>
-
             <div className="grid grid-cols-2 gap-4">
               <div><label className="block text-sm mb-1">City</label><input className="w-full px-3 py-2 border rounded" value={form.city} onChange={e=>setForm(f=>({...f,city:e.target.value}))} /></div>
               <div><label className="block text-sm mb-1">State</label><input className="w-full px-3 py-2 border rounded" value={form.state} onChange={e=>setForm(f=>({...f,state:e.target.value}))} /></div>
             </div>
-
             <div><label className="block text-sm mb-1">PIN</label><input className="w-full px-3 py-2 border rounded" value={form.pin} onChange={e=>setForm(f=>({...f,pin:e.target.value}))} /></div>
-
             <div className="grid grid-cols-2 gap-4">
               <div><label className="block text-sm mb-1">Contact Email</label><input className="w-full px-3 py-2 border rounded" value={form.contactEmail} onChange={e=>setForm(f=>({...f,contactEmail:e.target.value}))} /></div>
               <div><label className="block text-sm mb-1">Contact Phone</label><input className="w-full px-3 py-2 border rounded" value={form.contactPhone} onChange={e=>setForm(f=>({...f,contactPhone:e.target.value}))} /></div>
@@ -128,7 +116,6 @@ function AddSchoolModal({ onClose = () => {}, onCreate = async () => {} }) {
   );
 }
 
-/* ---------- ViewSchoolModal ---------- */
 function ViewSchoolModal({ school = null, onClose = () => {} }) {
   if (!school) return null;
   const city = school.city || (school.meta && school.meta.city) || '-';
@@ -158,7 +145,6 @@ function ViewSchoolModal({ school = null, onClose = () => {} }) {
   );
 }
 
-/* ---------- AdminDetailsModal ---------- */
 function AdminDetailsModal({ admin = null, onClose = () => {} }) {
   if (!admin) return null;
   return (
@@ -182,7 +168,6 @@ function AdminDetailsModal({ admin = null, onClose = () => {} }) {
   );
 }
 
-/* ---------- AdminsModal (list for a school) ---------- */
 function AdminsModal({ school = null, onClose = () => {}, fetchAdminsFn }) {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -243,13 +228,11 @@ function AdminsModal({ school = null, onClose = () => {}, fetchAdminsFn }) {
         </div>
       </div>
 
-      {/* nested AdminDetailsModal */}
       {selectedAdmin && <AdminDetailsModal admin={selectedAdmin} onClose={() => setSelectedAdmin(null)} />}
     </div>
   );
 }
 
-/* ---------- EditSchoolModal ---------- */
 function EditSchoolModal({ school = null, onClose = () => {}, onSave = async () => {} }) {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -345,7 +328,6 @@ export default function SuperadminDashboard() {
   const [editingSchool, setEditingSchool] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  // new admin modal state
   const [showAdminsModal, setShowAdminsModal] = useState(false);
   const [adminsLoading, setAdminsLoading] = useState(false);
 
@@ -361,7 +343,7 @@ export default function SuperadminDashboard() {
       if (limit) params.set("limit", limit);
       if (page) params.set("page", page);
       if (search) params.set("search", search);
-      const url = `${BASE_URL}/api/schools?${params.toString()}`;
+      const url = `${BASE_URL}api/schools?${params.toString()}`;
       const res = await fetch(url, { headers: { "Content-Type": "application/json", ...getAuthHeader() } });
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.message || `HTTP ${res.status}`);
@@ -389,34 +371,27 @@ export default function SuperadminDashboard() {
   }
 
   useEffect(() => { fetchSchools(1, schoolsLimit, ""); }, []);
-
-  // Modified: accepts optional admin argument
   async function handleCreateSchool(payload, admin = null) {
     try {
-      const res = await fetch(`${BASE_URL}/api/schools/`, {
+      const res = await fetch(`${BASE_URL}api/schools/`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
         body: JSON.stringify(payload)
       });
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.message || JSON.stringify(body) || `HTTP ${res.status}`);
-
-      // created school object (backend dependent)
       const createdSchool = body?.data ?? body ?? {};
-
-      // If admin details provided, create admin and attach to school
       if (admin) {
         try {
           const adminPayload = {
-            fullName: admin.name, // send fullName to match controller
+            fullName: admin.name,
             email: admin.email,
             password: admin.password,
             role: admin.role || "admin",
             ...(admin.phone ? { phone: admin.phone } : {}),
             schoolId: createdSchool._id || createdSchool.id || createdSchool.schoolId || undefined
           };
-          // If for some reason school id is not present, still send (backend should validate)
-          const adminRes = await fetch(`${BASE_URL}/api/admin/onboard`, {
+          const adminRes = await fetch(`${BASE_URL}api/admin/onboard`, {
             method: "POST",
             headers: { "Content-Type": "application/json", ...getAuthHeader() },
             body: JSON.stringify(adminPayload)
@@ -424,19 +399,14 @@ export default function SuperadminDashboard() {
           const adminBody = await adminRes.json().catch(()=>null);
           if (!adminRes.ok) {
             console.warn("Admin creation returned error", adminBody);
-            // show non-blocking alert but proceed to refresh schools
             alert("School created but admin creation failed: " + (adminBody?.message || `HTTP ${adminRes.status}`));
           } else {
-            // optionally notify success
-            // alert("Admin created for school.");
           }
         } catch (err) {
           console.error("Admin creation failed", err);
           alert("School created but admin creation failed: " + (err?.message || err));
         }
       }
-
-      // refresh list and switch tab
       await fetchSchools(1, schoolsLimit, schoolsSearch);
       setActiveTab("schools");
       return body;
@@ -450,7 +420,7 @@ export default function SuperadminDashboard() {
   async function handleDeleteSchool(id) {
     if (!confirm("Delete this school? This cannot be undone.")) return;
     try {
-      const res = await fetch(`${BASE_URL}/api/schools/${id}`, {
+      const res = await fetch(`${BASE_URL}api/schools/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json", ...getAuthHeader() }
       });
@@ -465,7 +435,7 @@ export default function SuperadminDashboard() {
 
   async function handleSaveSchool(id, payload) {
     try {
-      const res = await fetch(`${BASE_URL}/api/schools/${id}`, {
+      const res = await fetch(`${BASE_URL}api/schools/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
         body: JSON.stringify(payload)
@@ -487,41 +457,33 @@ export default function SuperadminDashboard() {
   }
 
   async function handleCreateApiKey(payload) {
-    // Demo placeholder — replace with real endpoint if available
     alert("Create API key demo — not wired to backend. Replace this with your POST /api/apikeys.");
   }
 
-  // ---------------- Admins helpers ----------------
-  // fetch admins for a schoolId
   async function fetchAdminsForSchool(schoolId) {
     setAdminsLoading(true);
     try {
-      // default attempt: users endpoint with query params
-      const url = `${BASE_URL}/api/users?schoolId=${encodeURIComponent(schoolId)}&role=admin`;
+      const url = `${BASE_URL}api/users?schoolId=${encodeURIComponent(schoolId)}&role=admin`;
       const res = await fetch(url, { headers: { "Content-Type": "application/json", ...getAuthHeader() } });
       const body = await res.json().catch(()=>null);
       if (!res.ok) throw new Error(body?.message || `HTTP ${res.status}`);
       let arr = Array.isArray(body) ? body : (body.data ?? body.users ?? body.items ?? []);
 
-      // If the backend ignored filtering and returned all admins, filter client-side by schoolId
       if (Array.isArray(arr)) {
         const sid = (schoolId || "").toString();
         arr = arr.filter(a => {
-          // a.schoolId might be an ObjectId or string or nested; normalize both to string
           const aSid = (a.schoolId || a.school || a.school_id || "").toString();
           return aSid === sid;
         });
       }
 
-      // If no results, try fallback endpoint schools/:id/admins
       if (!arr || arr.length === 0) {
         try {
-          const url2 = `${BASE_URL}/api/schools/${encodeURIComponent(schoolId)}/admins`;
+          const url2 = `${BASE_URL}api/schools/${encodeURIComponent(schoolId)}/admins`;
           const res2 = await fetch(url2, { headers: { "Content-Type": "application/json", ...getAuthHeader() } });
           const body2 = await res2.json().catch(()=>null);
           if (res2.ok) {
             const arr2 = Array.isArray(body2) ? body2 : (body2.data ?? body2.admins ?? []);
-            // filter again just in case
             const sid = (schoolId || "").toString();
             return Array.isArray(arr2) ? arr2.filter(a => ((a.schoolId||a.school||a.school_id||"").toString() === sid)) : [];
           }
@@ -533,9 +495,8 @@ export default function SuperadminDashboard() {
       return arr;
     } catch (err) {
       console.error("fetchAdminsForSchool error", err);
-      // try fallback: schools/:id/admins if backend exposes it
       try {
-        const url2 = `${BASE_URL}/api/schools/${encodeURIComponent(schoolId)}/admins`;
+        const url2 = `${BASE_URL}api/schools/${encodeURIComponent(schoolId)}/admins`;
         const res2 = await fetch(url2, { headers: { "Content-Type": "application/json", ...getAuthHeader() } });
         const body2 = await res2.json().catch(()=>null);
         if (!res2.ok) throw new Error(body2?.message || `HTTP ${res2.status}`);
@@ -545,20 +506,18 @@ export default function SuperadminDashboard() {
         return arr2;
       } catch (err2) {
         console.error("fetchAdminsForSchool fallback error", err2);
-        throw err; // throw original
+        throw err;
       }
     } finally {
       setAdminsLoading(false);
     }
   }
 
-  // called when user clicks "Admins" button for a school row
   function handleViewAdmins(school) {
-    setViewingSchool(school);   // keep view modal behavior consistent
+    setViewingSchool(school);  
     setShowAdminsModal(true);
   }
 
-  // ---------------- UI ----------------
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 text-gray-800">
       <div className="grid grid-cols-12 gap-0">
@@ -611,9 +570,7 @@ export default function SuperadminDashboard() {
             </div>
           )}
 
-          {/* Make table take full width by removing right aside */}
           <div className="grid grid-cols-1 gap-6">
-            {/* Main full-width column */}
             <div className="space-y-6">
               {(activeTab === "dashboard" || activeTab === "schools") && (
                 <section>
@@ -698,8 +655,6 @@ export default function SuperadminDashboard() {
                 </section>
               )}
             </div>
-
-            {/* Right sidebar widgets removed to allow table full width */}
 
           </div>
         </main>

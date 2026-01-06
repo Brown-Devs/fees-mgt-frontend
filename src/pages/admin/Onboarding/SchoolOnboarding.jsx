@@ -24,7 +24,7 @@ export default function SchoolOnboarding() {
   const [editMode, setEditMode] = useState(false);
   const [completing, setCompleting] = useState(false);
 
-  /* ================= FETCH SCHOOL ================= */
+  
   useEffect(() => {
     async function fetchSchool() {
       try {
@@ -42,7 +42,7 @@ export default function SchoolOnboarding() {
   }, []);
   
 
-  /* ================= COMPLETE ONBOARDING ================= */
+  
   async function completeOnboarding() {
     if (!school?._id) return;
 
@@ -50,7 +50,7 @@ export default function SchoolOnboarding() {
     try {
       await api.put(`/api/schools/${school._id}/onboarding/complete`);
 
-      // refresh school state
+      
       const res = await api.get("/api/schools/me");
       setSchool(res.data.data);
 
@@ -64,15 +64,13 @@ export default function SchoolOnboarding() {
     }
   }
 
-  /* ================= NEXT BUTTON ================= */
+  
   async function handleNext() {
-    // No branches → finish after School Settings
     if (currentStep === 3 && !hasBranches) {
       await completeOnboarding();
       return;
     }
 
-    // Last step → finish
     if (currentStep === STEPS.length - 1) {
       await completeOnboarding();
       return;
@@ -81,18 +79,16 @@ export default function SchoolOnboarding() {
     setCurrentStep((s) => s + 1);
   }
 
-  /* ================= LOADING ================= */
   if (loading) return <div className="p-6">Loading school...</div>;
 
-  /* ================= COMPLETED VIEW ================= */
   if (school?.onboarding?.completed && !editMode) {
     return (
       <div className="max-w-xl mx-auto mt-20 p-6 bg-white border rounded-xl text-center">
-        <h2 className="text-2xl font-semibold text-emerald-600">
-          🎉 School Onboarding Completed
+        <h2 className="text-2xl font-semibold text-black">
+          School Onboarding Completed
         </h2>
 
-        <p className="text-slate-600 mt-2">
+        <p className="text-black mt-2">
           Your school setup is complete.
         </p>
 
@@ -100,7 +96,7 @@ export default function SchoolOnboarding() {
           <button
             onClick={() => {
               setEditMode(true);
-              setCurrentStep(0); // ✅ IMPORTANT FIX
+              setCurrentStep(0); 
             }}
             className="px-6 py-2 border rounded"
           >
@@ -109,7 +105,7 @@ export default function SchoolOnboarding() {
 
           <button
             onClick={() => (window.location.href = "/admin")}
-            className="px-6 py-2 bg-emerald-600 text-white rounded"
+            className="px-6 py-2 bg-blue-600 text-white rounded"
           >
             Go to Dashboard
           </button>
@@ -126,7 +122,7 @@ export default function SchoolOnboarding() {
             key={s}
             className={`shrink-0 px-3 py-1 rounded-full text-sm whitespace-nowrap ${
               i === currentStep
-                ? "bg-emerald-600 text-white"
+                ? "bg-black text-white"
                 : "bg-slate-100 text-slate-600"
             }`}
           >
@@ -164,7 +160,7 @@ export default function SchoolOnboarding() {
         <button
           onClick={handleNext}
           disabled={completing}
-          className="w-full sm:w-auto px-6 py-2 bg-emerald-600 text-white rounded disabled:opacity-60"
+          className="w-full sm:w-auto px-6 py-2 bg-black text-white rounded disabled:opacity-60"
         >
           {completing
             ? "Finishing..."

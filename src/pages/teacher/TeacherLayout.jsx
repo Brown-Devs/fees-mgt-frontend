@@ -1,9 +1,9 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { clearToken } from "../../lib/api";
 import logo from "../../assets/logo.png";
-import { HiOutlineCreditCard } from "react-icons/hi2";
+import { HiOutlineClipboardDocumentList } from "react-icons/hi2";
 
-export default function ParentLayout() {
+export default function TeacherLayout() {
   const navigate = useNavigate();
 
   const logout = () => {
@@ -20,15 +20,16 @@ export default function ParentLayout() {
           {/* Logo */}
           <div className="px-4 py-6 flex flex-col items-center gap-4 border-b">
             <img src={logo} alt="School Logo" className="h-14" />
+
             <span className="text-sm font-semibold text-slate-600">
-              Parent Panel
+              Teacher Panel
             </span>
           </div>
 
           {/* Menu */}
           <nav className="flex-1 px-3 py-4">
             <NavLink
-              to="/parent/payments/make"
+              to="/teacher/attendance"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
                   isActive
@@ -37,8 +38,8 @@ export default function ParentLayout() {
                 }`
               }
             >
-              <HiOutlineCreditCard className="text-lg" />
-              Make Payment
+              <HiOutlineClipboardDocumentList className="text-lg" />
+              Attendance
             </NavLink>
           </nav>
 
@@ -51,11 +52,10 @@ export default function ParentLayout() {
               Logout
             </button>
           </div>
-
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* Main content */}
       <main className="flex-1 p-6">
         <Outlet />
       </main>

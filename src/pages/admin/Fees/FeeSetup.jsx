@@ -16,7 +16,7 @@ const FeeSetup = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2 style={{ color: "navy" }}>Fee Setup</h2>
+      {/* <h2 style={{ color: "navy" }}>Fees Management</h2> */}
 
       <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
         <div style={tabStyle("heads")} onClick={() => setActiveTab("heads")}>

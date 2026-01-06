@@ -16,17 +16,16 @@ const ClassList = () => {
 
   // Fetch classes
   const fetchClasses = async () => {
-  setLoading(true);
-  try {
-    const res = await api.get("/api/classes");
-    setClasses(res.data.data);
-  } catch (err) {
-    console.error("Failed to load classes", err);
-    alert("Failed to load classes");
-  }
-  setLoading(false);
-};
-
+    setLoading(true);
+    try {
+      const res = await api.get("/api/classes");
+      setClasses(res.data.data);
+    } catch (err) {
+      console.error("Failed to load classes", err);
+      alert("Failed to load classes");
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     fetchClasses();
@@ -91,7 +90,9 @@ const ClassList = () => {
 
   return (
     <div>
-      <h2 style={{ color: "navy", marginBottom: "20px" }}>Class Management</h2>
+      {/* <h2 style={{ color: "navy", marginBottom: "20px" }}>
+        Class Management
+      </h2> */}
 
       {/* Create Class Form */}
       <form
@@ -157,7 +158,7 @@ const ClassList = () => {
           type="submit"
           disabled={submitting}
           style={{
-            background: submitting ? "#999" : "navy",
+            background: submitting ? "#999" : "black",
             color: "white",
             padding: "10px 20px",
             border: "none",
@@ -178,12 +179,20 @@ const ClassList = () => {
           boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
         }}
       >
-        <thead style={{ background: "navy", color: "white" }}>
+        <thead style={{ background: "black", color: "white" }}>
           <tr>
-            <th style={{ padding: "10px" }}>Class</th>
-            <th style={{ padding: "10px" }}>Section</th>
-            <th style={{ padding: "10px" }}>Stream</th>
-            <th style={{ padding: "10px" }}>Actions</th>
+            <th style={{ padding: "12px", width: "25%" }}>Class</th>
+            <th style={{ padding: "12px", width: "20%" }}>Section</th>
+            <th style={{ padding: "12px", width: "25%" }}>Stream</th>
+            <th
+              style={{
+                padding: "12px",
+                width: "30%",
+                textAlign: "center",
+              }}
+            >
+              Actions
+            </th>
           </tr>
         </thead>
 
@@ -202,36 +211,49 @@ const ClassList = () => {
             </tr>
           ) : (
             classes.map((cls) => (
-              <tr key={cls._id}>
+              <tr key={cls._id} style={{ borderBottom: "1px solid #eee" }}>
                 <td style={{ padding: "10px" }}>{cls.name}</td>
-                <td style={{ padding: "10px" }}>{cls.section || "-"}</td>
+                <td style={{ padding: "10px" }}>
+                  {cls.section || "-"}
+                </td>
                 <td style={{ padding: "10px" }}>{cls.stream}</td>
 
-                <td style={{ padding: "10px" }}>
-                  <button
-                    onClick={() => setEditing(cls)}
+                <td style={{ padding: "10px", textAlign: "center" }}>
+                  <div
                     style={{
-                      background: "navy",
-                      color: "white",
-                      padding: "5px 10px",
-                      borderRadius: "4px",
-                      marginRight: "10px",
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "10px",
                     }}
                   >
-                    Edit
-                  </button>
+                    <button
+                      onClick={() => setEditing(cls)}
+                      style={{
+                        background: "black",
+                        color: "white",
+                        padding: "6px 14px",
+                        borderRadius: "5px",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Edit
+                    </button>
 
-                  <button
-                    onClick={() => deleteClass(cls._id)}
-                    style={{
-                      background: "red",
-                      color: "white",
-                      padding: "5px 10px",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    Delete
-                  </button>
+                    <button
+                      onClick={() => deleteClass(cls._id)}
+                      style={{
+                        background: "red",
+                        color: "white",
+                        padding: "6px 14px",
+                        borderRadius: "5px",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))

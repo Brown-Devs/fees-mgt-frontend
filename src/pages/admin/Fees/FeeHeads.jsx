@@ -11,7 +11,6 @@ const FeeHeads = () => {
     setLoading(true);
     try {
       const res = await api.get("/api/fees/heads");
-      // assuming backend returns { data: [...] } OR direct array
       setFeeHeads(res.data?.data || res.data || []);
     } catch (err) {
       console.error(err);
@@ -29,7 +28,6 @@ const FeeHeads = () => {
     setSubmitting(true);
     try {
       const res = await api.post("/api/fees/heads", form);
-      // assuming backend returns created head in res.data or res.data.data
       const newHead = res.data?.data || res.data;
       setFeeHeads((prev) => [...prev, newHead]);
       setForm({ name: "", code: "", description: "" });
@@ -42,7 +40,9 @@ const FeeHeads = () => {
 
   return (
     <div>
-      <h3 style={{ color: "navy" }}>Fee Heads</h3>
+      <h2 className="text-2xl font-semibold mb-6 text-[#0a1a44]">
+        Fee Head Setup
+      </h2>
 
       {/* Create Form */}
       <form
@@ -102,7 +102,7 @@ const FeeHeads = () => {
           type="submit"
           disabled={submitting || !form.name}
           style={{
-            background: submitting ? "#999" : "navy",
+            background: submitting ? "#999" : "black",
             color: "white",
             padding: "10px 20px",
             border: "none",
@@ -123,7 +123,7 @@ const FeeHeads = () => {
           boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
         }}
       >
-        <thead style={{ background: "navy", color: "white" }}>
+        <thead style={{ background: "black", color: "white" }}>
           <tr>
             <th style={{ padding: "10px", textAlign: "left" }}>Name</th>
             <th style={{ padding: "10px", textAlign: "left" }}>Code</th>

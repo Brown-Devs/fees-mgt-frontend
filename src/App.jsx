@@ -3,6 +3,9 @@ import Login from "./pages/auth/login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./pages/admin/AdminLayout";
 import ParentLayout from "./pages/parent/ParentLayout";
+import AccountantLayout from "./pages/accountant/AccountantLayout";
+import TeacherLayout from "./pages/teacher/TeacherLayout";
+
 import Unauthorized from "./pages/Unauthorized";
 import AttendancePage from "./pages/admin/Attendance/AttendancePage";
 
@@ -15,18 +18,18 @@ import FeeSetup from "./pages/admin/Fees/FeeSetup";
 import UserList from "./pages/admin/Users/UserList";
 import ClassList from "./pages/admin/Class/ClassList";
 
-// NEW STUDENT MODULE (correct paths)
+// STUDENT MODULE
 import StudentListPage from "./modules/students/pages/StudentListPage";
 import StudentCreatePage from "./modules/students/pages/StudentCreatePage";
 import StudentEditPage from "./modules/students/pages/StudentEditPage";
 import StudentDetailPage from "./modules/students/pages/StudentDetailPage";
+
 // STAFF MODULE
 import TeacherList from "./pages/admin/staff/TeacherList";
 import AccountantList from "./pages/admin/staff/AccountantsList";
 
 import MakePaymentPage from "./pages/admin/Payments/MakePaymentPage";
 import VerifyPaymentPage from "./pages/admin/Payments/VerifyPaymentPage";
-
 
 function App() {
   return (
@@ -53,26 +56,27 @@ function App() {
           </ProtectedRoute>
         }
       >
-        {/* Nested admin pages */}
         <Route index element={<AdminDashboard />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="onboarding" element={<SchoolOnboarding />} />
         <Route path="class" element={<ClassList />} />
         <Route path="branches" element={<BranchesList />} />
         <Route path="fees" element={<FeeSetup />} />
-        {/* PAYMENT MODULE ROUTES */}
-<Route path="payments/make" element={<MakePaymentPage />} />
-<Route path="payments/verify" element={<VerifyPaymentPage />} />
 
-        
-        {/* STAFF MODULE ROUTES */}
+        {/* PAYMENTS */}
+        <Route path="payments/make" element={<MakePaymentPage />} />
+        <Route path="payments/verify" element={<VerifyPaymentPage />} />
+
+        {/* STAFF */}
         <Route path="staff/teachers" element={<TeacherList />} />
         <Route path="staff/accountants" element={<AccountantList />} />
-          <Route path="attendance" element={<AttendancePage />} />
+
+        {/* ATTENDANCE */}
+        <Route path="attendance" element={<AttendancePage />} />
 
         <Route path="users" element={<UserList />} />
 
-        {/* STUDENT MODULE ROUTES */}
+        {/* STUDENTS */}
         <Route path="students" element={<StudentListPage />} />
         <Route path="students/new" element={<StudentCreatePage />} />
         <Route path="students/:studentId/edit" element={<StudentEditPage />} />
@@ -82,34 +86,45 @@ function App() {
       <Route path="/unauthorized" element={<Unauthorized />} />
 
       {/* PARENT */}
-      <Route path="/parent" element={ <ProtectedRoute allowRoles={["parent"]}>
-      <ParentLayout />
+      <Route
+        path="/parent"
+        element={
+          <ProtectedRoute allowRoles={["parent"]}>
+            <ParentLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<MakePaymentPage />} />
+        <Route path="payments/make" element={<MakePaymentPage />} />
+      </Route>
+
+      {/* TEACHER PANEL */}
+<Route
+  path="/teacher"
+  element={
+    <ProtectedRoute allowRoles={["teacher"]}>
+      <TeacherLayout />
     </ProtectedRoute>
   }
 >
-  <Route path="dashboard" element={<MakePaymentPage />} />
-  <Route path="payments/make" element={<MakePaymentPage />} />
+  <Route path="dashboard" element={<AttendancePage />} />
+  <Route path="attendance" element={<AttendancePage />} />
 </Route>
 
-      {/* TEACHER */}
-      <Route
-        path="/teacher/dashboard"
-        element={
-          <ProtectedRoute allowRoles={["teacher"]}>
-            <div>Teacher Dashboard</div>
-          </ProtectedRoute>
-        }
-      />
 
-      {/* ACCOUNTANT */}
-      <Route
-        path="/accountant/dashboard"
-        element={
-          <ProtectedRoute allowRoles={["accountant"]}>
-            <div>Accountant Dashboard</div>
-          </ProtectedRoute>
-        }
-      />
+      {/* ACCOUNTANT PANEL */}
+<Route
+  path="/accountant"
+  element={
+    <ProtectedRoute allowRoles={["accountant"]}>
+      <AccountantLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="dashboard" element={<VerifyPaymentPage />} />
+  <Route path="payments/verify" element={<VerifyPaymentPage />} />
+</Route>
+
 
       {/* Default */}
       <Route path="*" element={<div>404 - Page Not Found</div>} />

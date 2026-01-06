@@ -65,7 +65,7 @@ export default function AcademicSettings({ school }) {
             <div
               key={i}
               className={`border p-3 rounded flex justify-between ${
-                s.isCurrent ? "bg-emerald-50 border-emerald-300" : ""
+                s.isCurrent ? "bg-blue-50 border-blue-300" : ""
               }`}
             >
               <div>
@@ -75,7 +75,7 @@ export default function AcademicSettings({ school }) {
                 </div>
               </div>
               {s.isCurrent && (
-                <span className="text-xs text-emerald-600 font-semibold">
+                <span className="text-xs text-blue-600 font-semibold">
                   CURRENT
                 </span>
               )}
@@ -152,7 +152,7 @@ export default function AcademicSettings({ school }) {
         <button
           disabled={saving}
           onClick={saveAcademicSettings}
-          className="bg-emerald-600 text-white px-6 py-2 rounded disabled:opacity-60"
+          className="bg-black text-white px-6 py-2 rounded disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save Academic Settings"}
         </button>

@@ -19,21 +19,19 @@ import {
   HiOutlineUsers,
   HiOutlineChatBubbleLeftRight,
   HiOutlineArrowsRightLeft,
-  HiOutlineBell,
   HiOutlineAcademicCap,
   HiOutlineCurrencyRupee,
   HiChevronDown,
   HiChevronRight,
 } from "react-icons/hi2";
 
-/* ===================== MENU ===================== */
+/* ===================== MENU (UNCHANGED) ===================== */
 const MENU = [
   { key: "dashboard", label: "Dashboard", to: "/admin", icon: <HiOutlineHome /> },
   { key: "school", label: "School Details", to: "/admin/onboarding", icon: <HiOutlineBuildingOffice2 /> },
   { key: "fees", label: "Fees Management", to: "/admin/fees", icon: <HiOutlineBanknotes /> },
   { key: "class", label: "Class", to: "/admin/class", icon: <HiOutlineUserGroup /> },
   { key: "student", label: "Student", to: "/admin/students", icon: <HiOutlineUser /> },
-
   { key: "attendance", label: "Attendance", to: "/admin/attendance", icon: <HiOutlineClipboardDocumentList /> },
 
   {
@@ -77,36 +75,17 @@ function Topbar({ schoolName }) {
   }
 
   return (
-    <header className="flex items-center justify-between gap-6 p-3 bg-white border-b">
-      <div className="flex items-center gap-5">
-        <div className="hidden md:block text-l text-black">Dashboard</div>
-        <input
-          className="w-full md:w-[380px] rounded-md border px-3 py-2 text-sm bg-slate-50"
-          placeholder="Search anything..."
-        />
+    <header className="flex items-center justify-between px-6 py-3 bg-white border-b border-slate-200">
+      <div className="text-sm font-medium text-slate-600">
+        {schoolName || "Dashboard"}
       </div>
 
-      <div className="flex items-center gap-3">
-        <button className="relative p-2 rounded-md hover:bg-slate-100">
-          <HiOutlineBell className="w-5 h-5 text-slate-600" />
-          <span className="absolute -top-1 -right-1 text-[10px] bg-rose-500 text-white px-1.5 rounded-full">
-            3
-          </span>
-        </button>
-
-        <div className="flex items-center gap-3">
-          <div className="hidden md:block text-right">
-            <div className="text-sm font-medium">Pooran</div>
-            <div className="text-xs text-slate-400">Senior Admin</div>
-          </div>
-          <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-700">
-            P
-          </div>
-          <button onClick={logout} className="text-sm text-rose-600 px-3 py-1 rounded hover:bg-rose-50">
-            Logout
-          </button>
-        </div>
-      </div>
+      <button
+        onClick={logout}
+        className="text-sm text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition"
+      >
+        Logout
+      </button>
     </header>
   );
 }
@@ -116,15 +95,33 @@ function Sidebar({ collapsed, setCollapsed }) {
   const [openMenu, setOpenMenu] = useState(null);
 
   return (
-    <aside className={`bg-white border-r ${collapsed ? "w-20" : "w-64"} transition-all`}>
+    <aside
+      className={`bg-white border-r border-slate-200 ${
+        collapsed ? "w-20" : "w-64"
+      } transition-all duration-300`}
+    >
       <div className="h-full flex flex-col">
-        <div className="p-4 flex justify-between items-center">
-          <img src={logo} alt="School Logo" className="h-10 hidden md:block" />
-          <button onClick={() => setCollapsed(!collapsed)} className="hidden md:block">
-            🡸
-          </button>
-        </div>
 
+        {/* Logo */}
+        <div className="px-4 py-6 flex flex-col items-center gap-3">
+  <img
+    src={logo}
+    alt="School Logo"
+    className={`transition-all ${
+      collapsed ? "h-10" : "h-14"
+    }`}
+  />
+
+  <button
+    onClick={() => setCollapsed(!collapsed)}
+    className="hidden md:flex text-slate-400 hover:text-slate-600"
+  >
+    🡸
+  </button>
+</div>
+
+
+        {/* Menu */}
         <nav className="flex-1 overflow-auto px-2 pb-6">
           <ul className="space-y-1">
             {MENU.map((m) => {
@@ -135,24 +132,31 @@ function Sidebar({ collapsed, setCollapsed }) {
                   <li key={m.key}>
                     <button
                       onClick={() => setOpenMenu(isOpen ? null : m.key)}
-                      className="flex items-center justify-between w-full px-3 py-2 text-sm rounded hover:bg-slate-50"
+                      className="flex items-center justify-between w-full px-3 py-2.5 text-sm rounded-lg text-slate-700 hover:bg-blue-50 transition"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-lg">{m.icon}</span>
+                        <span className="text-lg text-slate-500">{m.icon}</span>
                         {!collapsed && <span>{m.label}</span>}
                       </div>
-                      {!collapsed && (isOpen ? <HiChevronDown /> : <HiChevronRight />)}
+                      {!collapsed &&
+                        (isOpen ? (
+                          <HiChevronDown className="text-slate-400" />
+                        ) : (
+                          <HiChevronRight className="text-slate-400" />
+                        ))}
                     </button>
 
                     {!collapsed && isOpen && (
-                      <ul className="ml-8 mt-1 space-y-1">
+                      <ul className="ml-9 mt-1 space-y-1">
                         {m.children.map((c) => (
                           <li key={c.key}>
                             <NavLink
                               to={c.to}
                               className={({ isActive }) =>
-                                `block px-3 py-2 text-sm rounded hover:bg-slate-50 ${
-                                  isActive ? "bg-apple-50 text-apple-700 font-medium" : "text-slate-600"
+                                `block px-3 py-2 text-sm rounded-lg transition ${
+                                  isActive
+                                    ? "bg-blue-100 text-blue-700 font-medium"
+                                    : "text-slate-600 hover:bg-blue-50"
                                 }`
                               }
                             >
@@ -169,14 +173,18 @@ function Sidebar({ collapsed, setCollapsed }) {
               return (
                 <li key={m.key}>
                   <NavLink
-                    to={m.to}
-                    className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2 text-sm rounded hover:bg-slate-50 ${
-                        isActive ? "bg-apple-50 text-apple-700 font-medium" : "text-slate-700"
-                      }`
-                    }
-                  >
-                    <span className="text-lg">{m.icon}</span>
+  to={m.to}
+  end={m.key === "dashboard"}  
+  className={({ isActive }) =>
+    `flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg transition ${
+      isActive
+        ? "bg-blue-100 text-blue-700 font-medium"
+        : "text-slate-700 hover:bg-blue-50"
+    }`
+  }
+>
+
+                    <span className="text-lg text-slate-500">{m.icon}</span>
                     {!collapsed && <span>{m.label}</span>}
                   </NavLink>
                 </li>
@@ -194,7 +202,7 @@ export default function AdminLayout({ schoolName }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-cream">
+    <div className="min-h-screen flex bg-blue-50">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="flex-1 flex flex-col">
         <Topbar schoolName={schoolName} />

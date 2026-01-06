@@ -65,7 +65,7 @@ export default function BankDetails({ school }) {
         <button
           onClick={saveBankDetails}
           disabled={saving}
-          className="bg-emerald-600 text-white px-6 py-2 rounded disabled:opacity-60"
+          className="bg-black text-white px-6 py-2 rounded disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save Bank Details"}
         </button>

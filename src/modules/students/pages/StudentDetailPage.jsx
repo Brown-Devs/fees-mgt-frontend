@@ -18,7 +18,6 @@ const StudentDetailPage = () => {
   const [payments, setPayments] = useState([]);
   const [paymentModal, setPaymentModal] = useState(false);
 
-  // Load student
   useEffect(() => {
     if (!studentId || studentId === "new" || studentId === "create") {
       setLoading(false);
@@ -39,7 +38,6 @@ const StudentDetailPage = () => {
     loadStudent();
   }, [studentId]);
 
-  // Load fee structure once student is available
   useEffect(() => {
     if (!student?._id) return;
 
@@ -61,7 +59,6 @@ const StudentDetailPage = () => {
           }
         });
 
-        // Add transport fee
         if (student.usesTransport) {
           obj["Transport Fee"] = student.transportFee || 0;
         }
@@ -100,11 +97,9 @@ const StudentDetailPage = () => {
   return (
     <div className="p-6 max-w-6xl mx-auto print-area">
 
-      {/* NAVY PROFILE HEADER */}
       <div className="bg-[#0a1a44] text-white rounded-xl p-6 mb-6 shadow-md flex justify-between items-center no-print">
         <div className="flex items-center gap-6">
 
-          {/* Back Button */}
           <button
             onClick={() => navigate("/admin/students")}
             className="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition"
@@ -112,7 +107,6 @@ const StudentDetailPage = () => {
             ← Back
           </button>
 
-          {/* Student Photo + Info */}
           <div className="flex items-center gap-6">
             <div>
               {student.photoUrl ? (
@@ -141,7 +135,6 @@ const StudentDetailPage = () => {
           </div>
         </div>
 
-        {/* Print Button */}
         <button
           onClick={() => window.print()}
           className="px-4 py-2 bg-white text-[#0a1a44] rounded-lg shadow hover:bg-gray-100"
@@ -150,7 +143,6 @@ const StudentDetailPage = () => {
         </button>
       </div>
 
-      {/* TABS */}
       <div className="flex gap-6 border-b mb-6 no-print">
         {["profile", "attendance", "fees", "parent"].map((tab) => (
           <button
@@ -167,11 +159,9 @@ const StudentDetailPage = () => {
         ))}
       </div>
 
-      {/* PROFILE TAB */}
       {activeTab === "profile" && (
         <div className="space-y-6">
 
-          {/* Academic Info */}
           <div className="bg-white shadow rounded-xl p-6">
             <h4 className="text-lg font-semibold text-[#0a1a44] mb-4">
               Academic Information
@@ -187,7 +177,6 @@ const StudentDetailPage = () => {
             </div>
           </div>
 
-          {/* Parent Details */}
           <div className="bg-white shadow rounded-xl p-6">
             <h4 className="text-lg font-semibold text-[#0a1a44] mb-4">
               Parent / Guardian Details
@@ -209,7 +198,6 @@ const StudentDetailPage = () => {
             </div>
           </div>
 
-          {/* Contact Info */}
           <div className="bg-white shadow rounded-xl p-6">
             <h4 className="text-lg font-semibold text-[#0a1a44] mb-4">
               Contact Information
@@ -222,7 +210,6 @@ const StudentDetailPage = () => {
             </div>
           </div>
 
-          {/* Address */}
           <div className="bg-white shadow rounded-xl p-6">
             <h4 className="text-lg font-semibold text-[#0a1a44] mb-4">
               Address
@@ -230,7 +217,6 @@ const StudentDetailPage = () => {
             <p className="text-gray-700">{student.address || "No address provided"}</p>
           </div>
 
-          {/* Transport */}
           <div className="bg-white shadow rounded-xl p-6">
             <h4 className="text-lg font-semibold text-[#0a1a44] mb-4">
               Transport Information
@@ -246,7 +232,6 @@ const StudentDetailPage = () => {
             )}
           </div>
 
-          {/* Documents */}
           <div className="bg-white shadow rounded-xl p-6">
             <h4 className="text-lg font-semibold text-[#0a1a44] mb-4">
               Documents
@@ -281,7 +266,6 @@ const StudentDetailPage = () => {
         </div>
       )}
 
-      {/* ATTENDANCE TAB */}
       {activeTab === "attendance" && (
         <div className="bg-white shadow rounded-xl p-6">
           <h4 className="text-lg font-semibold text-[#0a1a44] mb-4">
@@ -291,7 +275,6 @@ const StudentDetailPage = () => {
         </div>
       )}
 
-      {/* FEES TAB */}
       {activeTab === "fees" && (
         <FeeDetails
           student={student}
@@ -302,7 +285,6 @@ const StudentDetailPage = () => {
         />
       )}
 
-      {/* PARENT TAB */}
       {activeTab === "parent" && (
         <div className="bg-white shadow rounded-xl p-6">
           <h4 className="text-lg font-semibold text-[#0a1a44] mb-4">
