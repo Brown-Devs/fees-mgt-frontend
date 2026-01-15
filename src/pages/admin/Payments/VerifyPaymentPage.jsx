@@ -1,119 +1,144 @@
+// src/pages/admin/Payments/AdminVerifyPaymentPage.jsx
 import React, { useEffect, useState } from "react";
 import api from "../../../apis/axios";
 
-const VerifyPaymentPage = () => {
+const AdminVerifyPaymentPage = () => {
   const [classes, setClasses] = useState([]);
   const [classId, setClassId] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [records, setRecords] = useState([]);
+  const [section, setSection] = useState("");
+  const [stream, setStream] = useState("");
+  const [payments, setPayments] = useState([]);
 
-  // Load classes
+  // Fetch classes
   useEffect(() => {
     api.get("/api/classes")
       .then(res => setClasses(res.data.data))
       .catch(err => console.error("Failed to load classes:", err));
   }, []);
 
-  // Load payments when class/status changes
+  // Auto-fill section & stream when class selected
   useEffect(() => {
-    if (classId) {
-      const url = `/api/payments/class/${classId}${statusFilter ? `?status=${statusFilter}` : ""}`;
-      api.get(url)
-        .then(res => setRecords(res.data.data))
-        .catch(err => console.error("Failed to load payments:", err));
-    } else {
-      setRecords([]);
+    if (!classId) {
+      setSection("");
+      setStream("");
+      return;
     }
-  }, [classId, statusFilter]);
+    const selectedClass = classes.find(c => c._id === classId);
+    if (selectedClass) {
+      setSection(selectedClass.section);
+      setStream(selectedClass.stream);
+    }
+  }, [classId, classes]);
 
-  const verifyPayment = async (paymentId) => {
+  // Fetch payments when class changes
+  useEffect(() => {
+    if (!classId) return;
+    api.get(`/api/payments/class/${classId}`, { params: { section, stream } })
+      .then(res => setPayments(res.data.data || []))
+      .catch(err => console.error("Failed to load payments:", err));
+  }, [classId, section, stream]);
+
+  const verify = async (paymentId) => {
     try {
-      await api.post("/api/payments/verify", { paymentId });
-      // reload
-      const url = `/api/payments/class/${classId}${statusFilter ? `?status=${statusFilter}` : ""}`;
-      const res = await api.get(url);
-      setRecords(res.data.data);
+      await api.post(`/api/payments/verify/${paymentId}`);
+      setPayments(prev =>
+        prev.map(p => p._id === paymentId ? { ...p, status: "Verified" } : p)
+      );
     } catch (err) {
-      console.error("Verification failed:", err);
+      console.error(err);
       alert("Verification failed");
     }
   };
 
   return (
-    <div className="p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-6 text-[#0a1a44]">Verify Payments</h2>
+    <div className="p-6 space-y-6">
+      <h2 className="text-2xl font-bold">Verify Payments</h2>
 
-      {/* Filters */}
-      <div className="flex gap-4 mb-6">
-        <select
-          className="border p-2"
-          value={classId}
-          onChange={e => setClassId(e.target.value)}
-        >
-          <option value="">Select Class</option>
-          {classes.map(c => (
-            <option key={c._id} value={c._id}>
-              {c.name} ({c.section} - {c.stream})
-            </option>
-          ))}
-        </select>
+      {/* Class dropdown */}
+      <select
+        className="border p-2 rounded"
+        value={classId}
+        onChange={e => setClassId(e.target.value)}
+      >
+        <option value="">Select Class</option>
+        {classes.map(c => (
+          <option key={c._id} value={c._id}>
+            {c.name} ({c.section} - {c.stream})
+          </option>
+        ))}
+      </select>
 
-        <select
-          className="border p-2"
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-        >
-          <option value="">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Uploaded">Uploaded</option>
-          <option value="Verified">Verified</option>
-        </select>
-      </div>
-
-      {/* Table */}
-      <table className="w-full border border-gray-300 rounded-lg shadow-sm">
-        <thead className="bg-[#0a1a44] text-white">
-          <tr>
-            <th className="p-3">Roll No</th>
-            <th className="p-3">Name</th>
-            <th className="p-3">Fee</th>
-            <th className="p-3">Amount</th>
-            <th className="p-3">Status</th>
-            <th className="p-3">Proof</th>
-            <th className="p-3">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {records.map((r, idx) => (
-            <tr key={r._id} className={`border-t ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-blue-50`}>
-              <td className="p-3">{r.studentId?.rollNo}</td>
-              <td className="p-3">{r.studentId ? `${r.studentId.firstName} ${r.studentId.lastName || ""}` : "-"}</td>
-              <td className="p-3">{r.feeStructureId?.session || "-"}</td>
-              <td className="p-3">₹{r.amount}</td>
-              <td className="p-3">{r.status}</td>
-              <td className="p-3">
-                {r.screenshotUrl ? (
-                  <a href={r.screenshotUrl} target="_blank" rel="noreferrer" className="text-blue-600 underline">
-                    View
-                  </a>
-                ) : "—"}
-              </td>
-              <td className="p-3 text-center">
-                {r.status === "Uploaded" ? (
-                  <button
-                    onClick={() => verifyPayment(r._id)}
-                    className="px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-                  >
-                    Verify
-                  </button>
-                ) : "—"}
-              </td>
+      {/* Payments table */}
+      <div className="overflow-auto">
+        <table className="min-w-full border mt-4">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-2 border">Student</th>
+              <th className="p-2 border">Roll No</th>
+              <th className="p-2 border">Amount</th>
+              <th className="p-2 border">Mode</th>
+              <th className="p-2 border">Status</th>
+              <th className="p-2 border">Proof</th>
+              <th className="p-2 border">Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {payments.map(p => (
+              <tr key={p._id}>
+                <td className="p-2 border">
+                  {p.studentId?.firstName} {p.studentId?.lastName}
+                </td>
+                <td className="p-2 border">{p.studentId?.rollNo}</td>
+                <td className="p-2 border">{p.amount}</td>
+                <td className="p-2 border">{p.mode}</td>
+                <td className="p-2 border">
+                  <span
+                    className={`px-2 py-1 rounded text-white ${
+                      p.status === "Pending" ? "bg-yellow-500" : "bg-green-600"
+                    }`}
+                  >
+                    {p.status}
+                  </span>
+                </td>
+                <td className="p-2 border">
+                  {p.screenshotUrl ? (
+                    <a href={p.screenshotUrl} target="_blank" rel="noreferrer">
+                      <img
+                        src={p.screenshotUrl}
+                        alt="proof"
+                        className="w-16 h-16 object-cover border rounded"
+                      />
+                    </a>
+                  ) : (
+                    <span className="text-gray-500">No image</span>
+                  )}
+                </td>
+                <td className="p-2 border">
+                  {p.status === "Pending" ? (
+                    <button
+                      onClick={() => verify(p._id)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded"
+                    >
+                      Verify
+                    </button>
+                  ) : (
+                    <span className="text-gray-500">Verified</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {payments.length === 0 && (
+              <tr>
+                <td colSpan={7} className="p-4 text-center text-gray-600">
+                  No payments found for this class.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default VerifyPaymentPage;
+export default AdminVerifyPaymentPage;

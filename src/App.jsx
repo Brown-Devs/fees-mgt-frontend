@@ -8,9 +8,14 @@ import TeacherLayout from "./pages/teacher/TeacherLayout";
 
 import Unauthorized from "./pages/Unauthorized";
 import AttendancePage from "./pages/admin/Attendance/AttendancePage";
+import AnnouncementPage from "./pages/admin/Announcement/announcement";
+import HolidayCalendar from "./pages/admin/Holiday/HolidayCalendar";
+import EnquiryList from "./pages/admin/Enquiries/EnquiryList";
+import VisitorList from "./pages/admin/Visitors/VisitorList";
+
+
 
 import SuperadminDashboard from "./pages/Superadmin/Dashboard";
-
 import AdminDashboard from "./pages/admin/Dashboard";
 import SchoolOnboarding from "./pages/admin/Onboarding/SchoolOnboarding";
 import BranchesList from "./pages/admin/Branches/BranchesList";
@@ -28,8 +33,11 @@ import StudentDetailPage from "./modules/students/pages/StudentDetailPage";
 import TeacherList from "./pages/admin/staff/TeacherList";
 import AccountantList from "./pages/admin/staff/AccountantsList";
 
-import MakePaymentPage from "./pages/admin/Payments/MakePaymentPage";
+// PAYMENTS MODULE
+import AdminMakePaymentPage from "./pages/admin/Payments/MakePaymentPage";
 import VerifyPaymentPage from "./pages/admin/Payments/VerifyPaymentPage";
+import ParentMakePaymentPage from "./pages/parent/MakePaymentPage";
+import ParentDashboard from "./pages/parent/ParentDashboard";
 
 function App() {
   return (
@@ -62,9 +70,14 @@ function App() {
         <Route path="class" element={<ClassList />} />
         <Route path="branches" element={<BranchesList />} />
         <Route path="fees" element={<FeeSetup />} />
+        <Route path="announcements" element={<AnnouncementPage />} />
+        <Route path="holidays" element={<HolidayCalendar />} />
+        <Route path="admissions" element={<EnquiryList />} />
+        <Route path="visitors" element={<VisitorList />} />
+
 
         {/* PAYMENTS */}
-        <Route path="payments/make" element={<MakePaymentPage />} />
+        <Route path="payments/make" element={<AdminMakePaymentPage />} />
         <Route path="payments/verify" element={<VerifyPaymentPage />} />
 
         {/* STAFF */}
@@ -85,7 +98,7 @@ function App() {
 
       <Route path="/unauthorized" element={<Unauthorized />} />
 
-      {/* PARENT */}
+      {/* PARENT PANEL */}
       <Route
         path="/parent"
         element={
@@ -94,37 +107,36 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route path="dashboard" element={<MakePaymentPage />} />
-        <Route path="payments/make" element={<MakePaymentPage />} />
+        <Route path="dashboard" element={<ParentDashboard />} />
+        <Route path="payments/make" element={<ParentMakePaymentPage />} />
       </Route>
 
       {/* TEACHER PANEL */}
-<Route
-  path="/teacher"
-  element={
-    <ProtectedRoute allowRoles={["teacher"]}>
-      <TeacherLayout />
-    </ProtectedRoute>
-  }
->
-  <Route path="dashboard" element={<AttendancePage />} />
-  <Route path="attendance" element={<AttendancePage />} />
-</Route>
-
+      <Route
+        path="/teacher"
+        element={
+          <ProtectedRoute allowRoles={["teacher"]}>
+            <TeacherLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<AttendancePage />} />
+        <Route path="attendance" element={<AttendancePage />} />
+      </Route>
 
       {/* ACCOUNTANT PANEL */}
-<Route
-  path="/accountant"
-  element={
-    <ProtectedRoute allowRoles={["accountant"]}>
-      <AccountantLayout />
-    </ProtectedRoute>
-  }
->
-  <Route path="dashboard" element={<VerifyPaymentPage />} />
-  <Route path="payments/verify" element={<VerifyPaymentPage />} />
-</Route>
-
+      <Route
+        path="/accountant"
+        element={
+          <ProtectedRoute allowRoles={["accountant"]}>
+            <AccountantLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<VerifyPaymentPage />} />
+        <Route path="payments/make" element={<AdminMakePaymentPage />} />
+        <Route path="payments/verify" element={<VerifyPaymentPage />} />
+      </Route>
 
       {/* Default */}
       <Route path="*" element={<div>404 - Page Not Found</div>} />
