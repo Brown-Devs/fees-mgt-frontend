@@ -12,6 +12,8 @@ import AnnouncementPage from "./pages/admin/Announcement/announcement";
 import HolidayCalendar from "./pages/admin/Holiday/HolidayCalendar";
 import EnquiryList from "./pages/admin/Enquiries/EnquiryList";
 import VisitorList from "./pages/admin/Visitors/VisitorList";
+import IncomeList from "./pages/admin/Income/IncomeList";
+import ExpenseList from "./pages/admin/Expenses/ExpenseList";
 
 
 
@@ -74,8 +76,10 @@ function App() {
         <Route path="holidays" element={<HolidayCalendar />} />
         <Route path="admissions" element={<EnquiryList />} />
         <Route path="visitors" element={<VisitorList />} />
+        <Route path="income" element={<IncomeList />} />
+        <Route path="expenses" element={<ExpenseList />} />
 
-
+ 
         {/* PAYMENTS */}
         <Route path="payments/make" element={<AdminMakePaymentPage />} />
         <Route path="payments/verify" element={<VerifyPaymentPage />} />

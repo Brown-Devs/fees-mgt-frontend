@@ -1,4 +1,3 @@
-// src/pages/admin/Payments/AdminVerifyPaymentPage.jsx
 import React, { useEffect, useState } from "react";
 import api from "../../../apis/axios";
 
@@ -9,14 +8,12 @@ const AdminVerifyPaymentPage = () => {
   const [stream, setStream] = useState("");
   const [payments, setPayments] = useState([]);
 
-  // Fetch classes
   useEffect(() => {
     api.get("/api/classes")
       .then(res => setClasses(res.data.data))
       .catch(err => console.error("Failed to load classes:", err));
   }, []);
 
-  // Auto-fill section & stream when class selected
   useEffect(() => {
     if (!classId) {
       setSection("");
@@ -30,7 +27,6 @@ const AdminVerifyPaymentPage = () => {
     }
   }, [classId, classes]);
 
-  // Fetch payments when class changes
   useEffect(() => {
     if (!classId) return;
     api.get(`/api/payments/class/${classId}`, { params: { section, stream } })
@@ -51,85 +47,103 @@ const AdminVerifyPaymentPage = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold">Verify Payments</h2>
+    <div className="p-6 bg-[#f5f7fb] min-h-screen">
 
-      {/* Class dropdown */}
-      <select
-        className="border p-2 rounded"
-        value={classId}
-        onChange={e => setClassId(e.target.value)}
-      >
-        <option value="">Select Class</option>
-        {classes.map(c => (
-          <option key={c._id} value={c._id}>
-            {c.name} ({c.section} - {c.stream})
-          </option>
-        ))}
-      </select>
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-[#0a1a44]">
+          Verify Payments
+        </h2>
+        <p className="text-sm text-gray-500">
+          Review and verify pending student fee payments
+        </p>
+      </div>
 
-      {/* Payments table */}
-      <div className="overflow-auto">
-        <table className="min-w-full border mt-4">
-          <thead className="bg-gray-100">
+      {/* Filters */}
+      <div className="bg-white rounded-xl shadow p-5 mb-6 w-full max-w-md">
+        <label className="block text-sm font-semibold text-gray-600 mb-2">
+          Select Class
+        </label>
+        <select
+          className="input-style"
+          value={classId}
+          onChange={e => setClassId(e.target.value)}
+        >
+          <option value="">Select Class</option>
+          {classes.map(c => (
+            <option key={c._id} value={c._id}>
+              {c.name} ({c.section} - {c.stream})
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-xl shadow overflow-x-auto border">
+        <table className="min-w-full">
+          <thead className="bg-[#f0f3ff] text-[#0a1a44] text-sm uppercase">
             <tr>
-              <th className="p-2 border">Student</th>
-              <th className="p-2 border">Roll No</th>
-              <th className="p-2 border">Amount</th>
-              <th className="p-2 border">Mode</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Proof</th>
-              <th className="p-2 border">Action</th>
+              <th className="p-3 text-left">Student</th>
+              <th className="p-3 text-left">Roll No</th>
+              <th className="p-3 text-left">Amount</th>
+              <th className="p-3 text-left">Mode</th>
+              <th className="p-3 text-left">Status</th>
+              <th className="p-3 text-left">Proof</th>
+              <th className="p-3 text-left">Action</th>
             </tr>
           </thead>
+
           <tbody>
             {payments.map(p => (
-              <tr key={p._id}>
-                <td className="p-2 border">
+              <tr key={p._id} className="border-t hover:bg-[#f5f7fb]">
+                <td className="p-3">
                   {p.studentId?.firstName} {p.studentId?.lastName}
                 </td>
-                <td className="p-2 border">{p.studentId?.rollNo}</td>
-                <td className="p-2 border">{p.amount}</td>
-                <td className="p-2 border">{p.mode}</td>
-                <td className="p-2 border">
+                <td className="p-3">{p.studentId?.rollNo}</td>
+                <td className="p-3 font-medium">₹{p.amount}</td>
+                <td className="p-3">{p.mode}</td>
+                <td className="p-3">
                   <span
-                    className={`px-2 py-1 rounded text-white ${
-                      p.status === "Pending" ? "bg-yellow-500" : "bg-green-600"
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      p.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-green-100 text-green-700"
                     }`}
                   >
                     {p.status}
                   </span>
                 </td>
-                <td className="p-2 border">
+                <td className="p-3">
                   {p.screenshotUrl ? (
                     <a href={p.screenshotUrl} target="_blank" rel="noreferrer">
                       <img
                         src={p.screenshotUrl}
-                        alt="proof"
-                        className="w-16 h-16 object-cover border rounded"
+                        alt="Payment Proof"
+                        className="w-14 h-14 object-cover rounded-lg border hover:scale-105 transition"
                       />
                     </a>
                   ) : (
-                    <span className="text-gray-500">No image</span>
+                    <span className="text-sm text-gray-400">No image</span>
                   )}
                 </td>
-                <td className="p-2 border">
+                <td className="p-3">
                   {p.status === "Pending" ? (
                     <button
                       onClick={() => verify(p._id)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded"
+                      className="px-4 py-1.5 bg-[#0a1a44] text-white rounded-lg hover:bg-[#122a6f]"
                     >
                       Verify
                     </button>
                   ) : (
-                    <span className="text-gray-500">Verified</span>
+                    <span className="text-sm text-gray-400">Verified</span>
                   )}
                 </td>
               </tr>
             ))}
+
             {payments.length === 0 && (
               <tr>
-                <td colSpan={7} className="p-4 text-center text-gray-600">
+                <td colSpan={7} className="p-6 text-center text-gray-500">
                   No payments found for this class.
                 </td>
               </tr>
@@ -137,6 +151,20 @@ const AdminVerifyPaymentPage = () => {
           </tbody>
         </table>
       </div>
+
+      <style>{`
+        .input-style {
+          padding: 0.6rem;
+          border: 1px solid #dbe2f1;
+          border-radius: 0.5rem;
+          width: 100%;
+        }
+        .input-style:focus {
+          outline: none;
+          border-color: #0a1a44;
+          box-shadow: 0 0 0 2px rgba(10,26,68,0.15);
+        }
+      `}</style>
     </div>
   );
 };

@@ -62,7 +62,6 @@ const MENU = [
   { key: "admission", label: "Admission Enquiry", to: "/admin/admissions", icon: <HiOutlineUserPlus /> },
   { key: "visitors", label: "Visitors", to: "/admin/visitors", icon: <HiOutlineUsers /> },
   { key: "complaints", label: "Complaints", to: "/admin/complaints", icon: <HiOutlineChatBubbleLeftRight /> },
-  { key: "users", label: "User & Roles", to: "/admin/users", icon: <HiOutlineArrowsRightLeft /> },
 ];
 
 /* ===================== TOPBAR ===================== */

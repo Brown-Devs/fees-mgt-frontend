@@ -59,6 +59,7 @@ const AdminMakePaymentPage = () => {
     if (!selectedStudent || !classId || !feeStructureId || !amount) {
       return alert("Please fill all required fields");
     }
+
     const formData = new FormData();
     formData.append("studentId", selectedStudent);
     formData.append("classId", classId);
@@ -78,69 +79,138 @@ const AdminMakePaymentPage = () => {
     }
   };
 
+  const Label = ({ text }) => (
+    <label className="text-xs font-semibold text-gray-600 mb-1 block">
+      {text}
+    </label>
+  );
+
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold">Make Payment (Admin/Accountant)</h2>
+    <div className="p-6 bg-[#f5f7fb] min-h-screen">
 
-      <div className="flex gap-4 items-center">
-        <select
-          className="border p-2 rounded"
-          value={classId}
-          onChange={e => setClassId(e.target.value)}
-        >
-          <option value="">Select Class</option>
-          {classes.map(c => (
-            <option key={c._id} value={c._id}>
-              {c.name} ({c.section} - {c.stream})
-            </option>
-          ))}
-        </select>
-
-        <select
-          className="border p-2 rounded"
-          value={selectedStudent}
-          onChange={e => setSelectedStudent(e.target.value)}
-          disabled={!classId}
-        >
-          <option value="">Select student</option>
-          {students.map(s => (
-            <option key={s._id} value={s._id}>
-              {s.rollNo} - {s.firstName} {s.lastName}
-            </option>
-          ))}
-        </select>
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-[#0a1a44]">
+          Make Payment
+        </h2>
+        <p className="text-sm text-gray-500">
+          Record manual fee payments for students (Admin / Accountant)
+        </p>
       </div>
 
-      <div className="bg-gray-50 p-4 rounded space-y-3">
-        <input
-          type="number"
-          className="border p-2 rounded w-48"
-          value={amount}
-          onChange={e => setAmount(e.target.value)}
-          placeholder="Amount"
-        />
-        <select
-          className="border p-2 rounded w-48"
-          value={mode}
-          onChange={e => setMode(e.target.value)}
-        >
-          <option value="Cash">Cash</option>
-          <option value="BankTransfer">Bank Transfer</option>
-          <option value="UPI">UPI</option>
-        </select>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={e => setFile(e.target.files[0])}
-        />
+      {/* Selection Section */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6 max-w-3xl">
+        <h4 className="section-title">STUDENT SELECTION</h4>
 
-        <button
-          onClick={submitManualPayment}
-          className="px-4 py-2 bg-blue-600 text-white rounded"
-        >
-          Record Payment
-        </button>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label text="Class" />
+            <select
+              className="input-style"
+              value={classId}
+              onChange={e => setClassId(e.target.value)}
+            >
+              <option value="">Select Class</option>
+              {classes.map(c => (
+                <option key={c._id} value={c._id}>
+                  {c.name} ({c.section} - {c.stream})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <Label text="Student" />
+            <select
+              className="input-style"
+              value={selectedStudent}
+              onChange={e => setSelectedStudent(e.target.value)}
+              disabled={!classId}
+            >
+              <option value="">Select Student</option>
+              {students.map(s => (
+                <option key={s._id} value={s._id}>
+                  {s.rollNo} - {s.firstName} {s.lastName}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
+
+      {/* Payment Details */}
+      <div className="bg-white rounded-xl shadow p-6 max-w-3xl">
+        <h4 className="section-title">PAYMENT DETAILS</h4>
+
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <Label text="Amount" />
+            <input
+              type="number"
+              value={amount}
+              onChange={e => setAmount(e.target.value)}
+              className="input-style"
+            />
+          </div>
+
+          <div>
+            <Label text="Payment Mode" />
+            <select
+              value={mode}
+              onChange={e => setMode(e.target.value)}
+              className="input-style"
+            >
+              <option value="Cash">Cash</option>
+              <option value="BankTransfer">Bank Transfer</option>
+              <option value="UPI">UPI</option>
+            </select>
+          </div>
+
+          <div className="col-span-2">
+            <Label text="Payment Proof (optional)" />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={e => setFile(e.target.files[0])}
+              className="block w-full text-sm text-gray-600
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-lg file:border-0
+                file:bg-[#eef1fb] file:text-[#0a1a44]
+                hover:file:bg-[#e0e6ff]"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            onClick={submitManualPayment}
+            className="px-6 py-2 bg-[#0a1a44] text-white rounded-lg hover:bg-[#122a6f]"
+          >
+            Record Payment
+          </button>
+        </div>
+      </div>
+
+      <style>{`
+        .input-style {
+          padding: 0.6rem;
+          border: 1px solid #dbe2f1;
+          border-radius: 0.5rem;
+          width: 100%;
+        }
+        .input-style:focus {
+          outline: none;
+          border-color: #0a1a44;
+          box-shadow: 0 0 0 2px rgba(10,26,68,0.15);
+        }
+        .section-title {
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #6b7280;
+          margin-bottom: 1rem;
+          letter-spacing: 0.04em;
+        }
+      `}</style>
     </div>
   );
 };
