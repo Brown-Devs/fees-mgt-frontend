@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import api from "../../../apis/axios";
+import api from "../../apis/axios";
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
