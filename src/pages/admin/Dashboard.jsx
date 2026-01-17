@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import api from "../../../apis/axios";
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -54,7 +54,6 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchInitial();
-    // Poll every 30 seconds for live updates
     pollingRef.current = setInterval(fetchStats, 30000);
     return () => clearInterval(pollingRef.current);
   }, []);
@@ -62,8 +61,8 @@ export default function AdminDashboard() {
   const fetchInitial = async () => {
     try {
       const [schoolRes, annRes] = await Promise.all([
-        axios.get("/api/schools/me", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
-        axios.get("/api/announcements", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+        api.get("/api/schools/me"),
+        api.get("/api/announcements")
       ]);
       setSchool(schoolRes.data.data);
       setAnnouncements(annRes.data.data || []);
@@ -75,7 +74,7 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get("/api/stats/dashboard", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+      const res = await api.get("/api/stats/dashboard");
       if (res.data && res.data.data) {
         setCounts(res.data.data.counts || {});
         setSeries(res.data.data.series || {});
@@ -85,7 +84,8 @@ export default function AdminDashboard() {
     }
   };
 
-  // Chart data and options
+  /* ---------- Chart Config ---------- */
+
   const feesData = {
     labels: series.months,
     datasets: [
@@ -106,7 +106,10 @@ export default function AdminDashboard() {
     datasets: [
       {
         label: "Income",
-        data: [series.incomeByType?.Fee || 0, series.incomeByType?.["Non Fee"] || 0],
+        data: [
+          series.incomeByType?.Fee || 0,
+          series.incomeByType?.["Non Fee"] || 0
+        ],
         backgroundColor: ["#0a1a44", "#66c2ff"]
       }
     ]
@@ -116,7 +119,7 @@ export default function AdminDashboard() {
     labels: series.months,
     datasets: [
       {
-        label: "Attendance % (monthly)",
+        label: "Attendance %",
         data: series.attendanceSeries,
         borderColor: "#066d3b",
         backgroundColor: "rgba(6,109,59,0.08)",
@@ -133,23 +136,23 @@ export default function AdminDashboard() {
       legend: { position: "top" },
       tooltip: { mode: "index", intersect: false }
     },
-    scales: {
-      y: { beginAtZero: true }
-    }
+    scales: { y: { beginAtZero: true } }
   };
 
   return (
     <div className="p-6 bg-[#f5f7fb] min-h-screen space-y-6">
-      {/* Date */}
+
       <div className="text-sm text-gray-600 font-medium">{formattedDate}</div>
 
-      {/* Welcome Card */}
       <div className="rounded-2xl p-6 bg-gradient-to-r from-[#eef2ff] to-[#dbe4ff] shadow">
-        <h1 className="text-2xl font-bold text-[#0a1a44]">Welcome {school ? school.name : ""}</h1>
-        <p className="mt-2 text-gray-700 max-w-xl">Manage academics, finance, communication, and operations from one place.</p>
+        <h1 className="text-2xl font-bold text-[#0a1a44]">
+          Welcome {school ? school.name : ""}
+        </h1>
+        <p className="mt-2 text-gray-700">
+          Manage academics, finance, and operations from one place.
+        </p>
       </div>
 
-      {/* Live Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard title="Total Students" value={counts.totalStudents ?? "—"} bg="bg-blue-50" text="text-blue-900" />
         <StatCard title="Pending Fees" value={counts.pendingFees ?? "—"} bg="bg-yellow-50" text="text-yellow-900" />
@@ -157,46 +160,40 @@ export default function AdminDashboard() {
         <StatCard title="Active Enquiries" value={counts.activeEnquiries ?? "—"} bg="bg-purple-50" text="text-purple-900" />
       </div>
 
-      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="col-span-2 bg-white rounded-2xl p-4 shadow border border-[#e5e9ff]">
-          <h3 className="text-navy-700 font-semibold mb-2">Fees Collected (last months)</h3>
+        <div className="col-span-2 bg-white rounded-2xl p-4 shadow">
+          <h3 className="font-semibold mb-2">Fees Collected</h3>
           <Line data={feesData} options={chartOptions} />
         </div>
 
-        <div className="bg-white rounded-2xl p-4 shadow border border-[#e5e9ff]">
-          <h3 className="text-navy-700 font-semibold mb-2">Income by Type</h3>
-          <Bar data={incomeData} options={{ ...chartOptions, scales: { y: { beginAtZero: true } } }} />
+        <div className="bg-white rounded-2xl p-4 shadow">
+          <h3 className="font-semibold mb-2">Income by Type</h3>
+          <Bar data={incomeData} options={chartOptions} />
         </div>
 
-        <div className="col-span-1 lg:col-span-3 bg-white rounded-2xl p-4 shadow border border-[#e5e9ff]">
-          <h3 className="text-navy-700 font-semibold mb-2">Attendance Trend</h3>
-          <Line data={attendanceData} options={{ ...chartOptions, scales: { y: { beginAtZero: true, max: 100 } } }} />
+        <div className="lg:col-span-3 bg-white rounded-2xl p-4 shadow">
+          <h3 className="font-semibold mb-2">Attendance Trend</h3>
+          <Line data={attendanceData} options={{ ...chartOptions, scales: { y: { max: 100 } } }} />
         </div>
       </div>
 
-      {/* Announcements */}
-      <div className="bg-[#f8f9ff] rounded-2xl shadow p-6 border border-[#e5e9ff]">
-        <h2 className="text-xl font-bold text-[#0a1a44] mb-4">Announcements</h2>
+      <div className="bg-[#f8f9ff] rounded-2xl shadow p-6">
+        <h2 className="text-xl font-bold mb-4">Announcements</h2>
         {announcements.length === 0 ? (
           <p className="text-gray-500">No announcements available.</p>
         ) : (
-          <div className="space-y-4">
-            {announcements.map((a) => (
-              <div key={a._id} className="bg-white rounded-xl p-4 border border-[#e5e9ff] hover:bg-[#f3f5ff] transition">
-                <h3 className="font-semibold text-[#0a1a44]">{a.title}</h3>
-                <p className="text-gray-700 mt-1">{a.content}</p>
-                <p className="text-xs text-gray-500 mt-2">{a.date ? new Date(a.date).toLocaleDateString() : ""}</p>
-              </div>
-            ))}
-          </div>
+          announcements.map(a => (
+            <div key={a._id} className="bg-white rounded-xl p-4 mb-3">
+              <h3 className="font-semibold">{a.title}</h3>
+              <p>{a.content}</p>
+            </div>
+          ))
         )}
       </div>
     </div>
   );
 }
 
-/* ---------- Stat Card Component ---------- */
 function StatCard({ title, value, bg, text }) {
   return (
     <div className={`rounded-2xl p-5 shadow ${bg}`}>

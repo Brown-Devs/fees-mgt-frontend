@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../apis/axios";
 
 export default function HolidayCalendar() {
   const today = new Date();
@@ -22,26 +22,33 @@ export default function HolidayCalendar() {
   }, []);
 
   const fetchHolidays = async () => {
-    const res = await axios.get("/api/holidays", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    });
-    setHolidays(res.data.data || []);
+    try {
+      const res = await api.get("/api/holidays");
+      setHolidays(res.data.data || []);
+    } catch (err) {
+      console.error("Error fetching holidays:", err);
+      setHolidays([]);
+    }
   };
 
   const handleSaveHoliday = async () => {
-    await axios.post("/api/holidays", newHoliday, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    });
-    setShowModal(false);
-    setNewHoliday({ name: "", date: "" });
-    fetchHolidays();
+    try {
+      await api.post("/api/holidays", newHoliday);
+      setShowModal(false);
+      setNewHoliday({ name: "", date: "" });
+      fetchHolidays();
+    } catch (err) {
+      console.error("Error saving holiday:", err);
+    }
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`/api/holidays/${id}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    });
-    fetchHolidays();
+    try {
+      await api.delete(`/api/holidays/${id}`);
+      fetchHolidays();
+    } catch (err) {
+      console.error("Error deleting holiday:", err);
+    }
   };
 
   const isHoliday = (dateStr) =>
@@ -50,7 +57,7 @@ export default function HolidayCalendar() {
   return (
     <div className="flex gap-6 p-6 bg-[#f5f7fb] min-h-screen">
 
-      {/* 📅 Calendar */}
+      {/* Calendar */}
       <div className="flex-1 bg-white rounded-xl shadow-lg p-6">
         <div className="flex justify-between items-center mb-6">
           <button
@@ -72,14 +79,12 @@ export default function HolidayCalendar() {
           </button>
         </div>
 
-        {/* Days */}
         <div className="grid grid-cols-7 text-center text-sm font-semibold text-gray-600 mb-3">
           {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => (
             <div key={d}>{d}</div>
           ))}
         </div>
 
-        {/* Dates */}
         <div className="grid grid-cols-7 gap-2 text-center">
           {Array(firstDay).fill(null).map((_, i) => (
             <div key={i}></div>
@@ -105,7 +110,7 @@ export default function HolidayCalendar() {
         </div>
       </div>
 
-      {/* 📋 Holiday List */}
+      {/* Holiday List */}
       <div className="w-80 bg-white rounded-xl shadow-lg p-6">
         <h3 className="text-xl font-bold text-[#0a1a44] mb-4">
           Holiday Calendar
@@ -118,7 +123,8 @@ export default function HolidayCalendar() {
               className="flex justify-between items-center bg-[#f5f7fb] px-3 py-2 rounded"
             >
               <span>
-                {h.name} <br />
+                {h.name}
+                <br />
                 <span className="text-xs text-gray-500">
                   {new Date(h.date).toLocaleDateString()}
                 </span>
@@ -127,7 +133,7 @@ export default function HolidayCalendar() {
                 onClick={() => handleDelete(h._id)}
                 className="text-red-500 hover:text-red-700"
               >
-                🗑
+                Delete
               </button>
             </li>
           ))}
@@ -141,7 +147,7 @@ export default function HolidayCalendar() {
         </button>
       </div>
 
-      {/* ➕ Modal */}
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-lg p-6 w-96">

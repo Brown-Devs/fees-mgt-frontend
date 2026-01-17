@@ -1,17 +1,17 @@
-import axios from "axios";
+import api from "../apis/axios";
 
-const api = axios.create();
-
-const authHeader = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` });
-
+// Fetch enquiries
 export const fetchEnquiries = (params = {}) =>
-  api.get("/api/enquiries", { params, headers: authHeader() });
+  api.get("/api/enquiries", { params });
 
+// Create enquiry
 export const createEnquiry = (payload) =>
-  api.post("/api/enquiries", payload, { headers: authHeader() });
+  api.post("/api/enquiries", payload);
 
+// Update enquiry
 export const updateEnquiry = (id, payload) =>
-  api.put(`/api/enquiries/${id}`, payload, { headers: authHeader() });
+  api.put(`/api/enquiries/${id}`, payload);
 
+// Delete enquiry
 export const deleteEnquiry = (id) =>
-  api.delete(`/api/enquiries/${id}`, { headers: authHeader() });
+  api.delete(`/api/enquiries/${id}`);

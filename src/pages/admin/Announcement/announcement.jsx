@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../apis/axios";
 
 export default function AdminAnnouncements() {
   const [announcements, setAnnouncements] = useState([]);
@@ -13,9 +13,7 @@ export default function AdminAnnouncements() {
 
   const fetchAnnouncements = async () => {
     try {
-      const res = await axios.get("/api/announcements", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
+      const res = await api.get("/api/announcements");
       setAnnouncements(res.data?.data || []);
     } catch (err) {
       console.error("Error fetching announcements:", err);
@@ -31,15 +29,16 @@ export default function AdminAnnouncements() {
     e.preventDefault();
     try {
       if (editing) {
-        await axios.put(`/api/announcements/${editing}`, form, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
+        await api.put(`/api/announcements/${editing}`, form);
       } else {
-        await axios.post("/api/announcements", form, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
+        await api.post("/api/announcements", form);
       }
-      setForm({ title: "", content: "", targetDashboards: ["all"], date: "" });
+      setForm({
+        title: "",
+        content: "",
+        targetDashboards: ["all"],
+        date: ""
+      });
       setEditing(null);
       fetchAnnouncements();
     } catch (err) {
@@ -49,9 +48,7 @@ export default function AdminAnnouncements() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/announcements/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
+      await api.delete(`/api/announcements/${id}`);
       fetchAnnouncements();
     } catch (err) {
       console.error("Error deleting announcement:", err);
@@ -189,7 +186,7 @@ export default function AdminAnnouncements() {
             Existing Announcements
           </h2>
 
-          {Array.isArray(announcements) && announcements.length > 0 ? (
+          {announcements.length > 0 ? (
             announcements.map((a) => (
               <div
                 key={a._id}
@@ -205,12 +202,11 @@ export default function AdminAnnouncements() {
                   <p className="text-xs text-gray-500 mt-1">
                     {a.date
                       ? new Date(a.date).toLocaleDateString()
-                      : "No date"}{" "}
-                    · {(a.targetDashboards || []).join(", ")}
+                      : "No date"} · {(a.targetDashboards || []).join(", ")}
                   </p>
                 </div>
 
-                <div className="flex gap-3 items-start">
+                <div className="flex gap-3">
                   <button
                     onClick={() => handleEdit(a)}
                     className="text-blue-600 hover:underline"
