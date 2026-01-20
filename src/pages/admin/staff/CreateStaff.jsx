@@ -1,47 +1,42 @@
 import React, { useState } from "react";
 import api from "../../../apis/axios";
+import { PERMISSIONS } from "../../../constants/permissions";
+import PermissionGroup from "../../../components/PermissionGroup";
 
 const StaffForm = ({ role, staff, onSuccess }) => {
   const [form, setForm] = useState({
     fullName: staff?.fullName || "",
     email: staff?.email || "",
     phone: staff?.phone || "",
-    password: ""
+    password: "",
+    permissions: staff?.permissions || []   // NEW
   });
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       if (staff) {
-  // update existing
-  await api.put(`/api/users/${staff._id}`, form);
-} else {
-  // create new
-  if (!form.password) {
-    alert("Password is required for new staff");
-    return;
-  }
-  console.log("Creating staff with payload:", {
-  fullName: form.fullName,
-  email: form.email,
-  password: form.password,
-  phone: form.phone,
-  role
-});
-
-  await api.post("/api/users", { 
-    fullName: form.fullName,
-    email: form.email,
-    password: form.password,
-    phone: form.phone,
-    role: role
-  });
-}
-alert("User created successfully!");
+        await api.put(`/api/users/${staff._id}`, form);
+      } else {
+        if (!form.password) {
+          alert("Password is required for new staff");
+          return;
+        }
+        await api.post("/api/users", {
+          fullName: form.fullName,
+          email: form.email,
+          password: form.password,
+          phone: form.phone,
+          role,
+          permissions: form.permissions,   // NEW
+        });
+      }
+      alert("User saved successfully!");
       onSuccess();
     } catch (err) {
       console.error("Failed to save staff:", err);
@@ -59,6 +54,28 @@ alert("User created successfully!");
       {!staff && (
         <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} className="border p-2 w-full" />
       )}
+
+      {/* Permission Groups */}
+      <PermissionGroup
+        title="Dashboard"
+        options={PERMISSIONS.DASHBOARD}
+        values={form.permissions}
+        onChange={(vals) => setForm({ ...form, permissions: vals })}
+      />
+      <PermissionGroup
+        title="School Details"
+        options={PERMISSIONS.SCHOOL_DETAILS}
+        values={form.permissions}
+        onChange={(vals) => setForm({ ...form, permissions: vals })}
+      />
+      <PermissionGroup
+        title="Fees Management"
+        options={PERMISSIONS.FEES}
+        values={form.permissions}
+        onChange={(vals) => setForm({ ...form, permissions: vals })}
+      />
+      {/* Add more modules as needed */}
+
       <button type="submit" disabled={loading} className="px-4 py-2 bg-[#0a1a44] text-white rounded">
         {loading ? "Saving..." : staff ? "Update" : "Create"}
       </button>
