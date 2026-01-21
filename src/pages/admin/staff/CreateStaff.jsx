@@ -9,7 +9,7 @@ const StaffForm = ({ role, staff, onSuccess }) => {
     email: staff?.email || "",
     phone: staff?.phone || "",
     password: "",
-    permissions: staff?.permissions || []   // NEW
+    permissions: staff?.permissions || []
   });
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +33,7 @@ const StaffForm = ({ role, staff, onSuccess }) => {
           password: form.password,
           phone: form.phone,
           role,
-          permissions: form.permissions,   // NEW
+          permissions: form.permissions,
         });
       }
       alert("User saved successfully!");
@@ -55,7 +55,7 @@ const StaffForm = ({ role, staff, onSuccess }) => {
         <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} className="border p-2 w-full" />
       )}
 
-      {/* Permission Groups */}
+
       <PermissionGroup
         title="Dashboard"
         options={PERMISSIONS.DASHBOARD}
@@ -74,7 +74,7 @@ const StaffForm = ({ role, staff, onSuccess }) => {
         values={form.permissions}
         onChange={(vals) => setForm({ ...form, permissions: vals })}
       />
-      {/* Add more modules as needed */}
+
 
       <button type="submit" disabled={loading} className="px-4 py-2 bg-[#0a1a44] text-white rounded">
         {loading ? "Saving..." : staff ? "Update" : "Create"}

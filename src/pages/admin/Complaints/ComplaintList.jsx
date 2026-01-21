@@ -102,7 +102,15 @@ export default function ComplaintList() {
                                             {(meta.page - 1) * meta.limit + idx + 1}
                                         </td>
                                         <td className="p-3 font-medium">{r.title}</td>
-                                        <td className="p-3">{r.complaintType}</td>
+                                        <td className="p-3">
+                                            <div className="font-medium">{r.complaintType}</div>
+                                            {r.targetName && (
+                                                <div className="text-sm text-gray-500">
+                                                    {r.targetName}
+                                                </div>
+                                            )}
+                                        </td>
+
                                         <td className="p-3">
                                             <span className="px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">
                                                 {r.complaintStatus || "Pending"}

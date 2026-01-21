@@ -8,66 +8,108 @@ export default function ComplaintForm({ onSaved, onClose }) {
         complaintType: "",
         targetId: "",
         classId: "",
+        targetName: "",
         sectionId: "",
         streamId: "",
         phone: ""
     });
 
-    const [teachers, setTeachers] = useState([]);
-    const [accountants, setAccountants] = useState([]);
-    const [students, setStudents] = useState([]);
+    const [targets, setTargets] = useState([]);
     const [classes, setClasses] = useState([]);
-    const [sections, setSections] = useState([]);
-    const [streams, setStreams] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    /* Load meta */
+    /* ================= LOAD CLASSES ================= */
     useEffect(() => {
-        api.get("/api/meta/classes").then(r => setClasses(r.data.data || []));
-        api.get("/api/meta/sections").then(r => setSections(r.data.data || []));
-        api.get("/api/meta/streams").then(r => setStreams(r.data.data || []));
+        api
+            .get("/api/classes")
+            .then(res => setClasses(res.data?.data || []))
+            .catch(() => setClasses([]));
     }, []);
 
-    /* Load teachers / accountants */
+    /* ========== AUTO FILL SECTION & STREAM FROM CLASS ========== */
     useEffect(() => {
-        if (form.complaintType === "Teacher") {
-            api.get("/api/meta/users", { params: { role: "teacher" } })
-                .then(r => setTeachers(r.data.data || []));
-        } else setTeachers([]);
+        if (!form.classId) {
+            setForm(prev => ({ ...prev, sectionId: "", streamId: "" }));
+            return;
+        }
 
-        if (form.complaintType === "Accountant") {
-            api.get("/api/meta/users", { params: { role: "accountant" } })
-                .then(r => setAccountants(r.data.data || []));
-        } else setAccountants([]);
+        const selectedClass = classes.find(c => c._id === form.classId);
+        if (selectedClass) {
+            setForm(prev => ({
+                ...prev,
+                sectionId: selectedClass.section,
+                streamId: selectedClass.stream
+            }));
+        }
+    }, [form.classId, classes]);
 
-        if (form.complaintType !== "Student") {
-            setForm(f => ({ ...f, classId: "", sectionId: "", streamId: "" }));
-            setStudents([]);
+    /* ================= LOAD TEACHERS / ACCOUNTANTS ================= */
+    useEffect(() => {
+        if (!form.complaintType) return;
+
+        setTargets([]);
+        setForm(prev => ({ ...prev, targetId: "" }));
+
+        if (form.complaintType === "Teacher" || form.complaintType === "Accountant") {
+            api
+                .get("/api/users")
+                .then(res => {
+                    const users = res.data?.data || [];
+
+                    const filtered = users
+                        .filter(u => u.role === form.complaintType.toLowerCase())
+                        .map(u => ({
+                            _id: u._id,
+                            fullName: u.fullName   // ✅ backend field
+                        }));
+
+                    setTargets(filtered);
+                })
+                .catch(() => setTargets([]));
         }
     }, [form.complaintType]);
 
-    /* Load students */
+    /* ================= LOAD STUDENTS ================= */
     useEffect(() => {
         if (
-            form.complaintType === "Student" &&
-            form.classId &&
-            form.sectionId &&
-            form.streamId
-        ) {
-            api.get("/api/meta/students", {
-                params: {
-                    class: form.classId,
-                    section: form.sectionId,
-                    stream: form.streamId
-                }
-            }).then(r => setStudents(r.data.data || []));
-        }
+            form.complaintType !== "Student" ||
+            !form.classId ||
+            !form.sectionId ||
+            !form.streamId
+        )
+            return;
+
+        api
+            .get(
+                `/api/students?classId=${form.classId}&section=${form.sectionId}&stream=${form.streamId}`
+            )
+            .then(res => {
+                const students = res.data?.data || [];
+
+                const normalized = students.map(s => ({
+                    _id: s._id,
+                    fullName: `${s.firstName} ${s.lastName || ""}`.trim(),
+                    rollNo: s.rollNo
+                }));
+
+                setTargets(normalized);
+            })
+            .catch(() => setTargets([]));
     }, [form.complaintType, form.classId, form.sectionId, form.streamId]);
 
+    /* ================= SUBMIT ================= */
     const submit = async () => {
         if (!form.title || !form.complaintType) {
             return alert("Title and Complaint Against are required");
         }
+
+        if (
+            ["Teacher", "Accountant", "Student"].includes(form.complaintType) &&
+            !form.targetId
+        ) {
+            return alert("Please select a person");
+        }
+
         setLoading(true);
         try {
             await api.post("/api/complaints", form);
@@ -115,87 +157,61 @@ export default function ComplaintForm({ onSaved, onClose }) {
                 >
                     <option value="">Complaint Against</option>
                     <option value="School">School</option>
-                    <option value="Accountant">Accountant</option>
                     <option value="Teacher">Teacher</option>
+                    <option value="Accountant">Accountant</option>
                     <option value="Student">Student</option>
                 </select>
 
-                {/* Teacher */}
-                {form.complaintType === "Teacher" && (
+                {/* TEACHER / ACCOUNTANT */}
+                {["Teacher", "Accountant"].includes(form.complaintType) && (
                     <select
                         className="input col-span-2"
                         value={form.targetId}
-                        onChange={e => setForm({ ...form, targetId: e.target.value })}
+                        onChange={e => {
+                            const selected = targets.find(t => t._id === e.target.value);
+                            setForm({
+                                ...form,
+                                targetId: e.target.value,
+                                targetName: selected?.fullName || ""
+                            });
+                        }}
                     >
-                        <option value="">Select Teacher</option>
-                        {teachers.map(t => (
-                            <option key={t._id} value={t._id}>{t.name}</option>
+                        <option value="">Select {form.complaintType}</option>
+                        {targets.map(u => (
+                            <option key={u._id} value={u._id}>
+                                {u.fullName}
+                            </option>
                         ))}
                     </select>
+
+
                 )}
 
-                {/* Accountant */}
-                {form.complaintType === "Accountant" && (
-                    <select
-                        className="input col-span-2"
-                        value={form.targetId}
-                        onChange={e => setForm({ ...form, targetId: e.target.value })}
-                    >
-                        <option value="">Select Accountant</option>
-                        {accountants.map(a => (
-                            <option key={a._id} value={a._id}>{a.name}</option>
-                        ))}
-                    </select>
-                )}
-
-                {/* Student flow */}
+                {/* STUDENT */}
                 {form.complaintType === "Student" && (
                     <>
                         <select
                             className="input"
-                            value={form.classId}
-                            onChange={e => setForm({ ...form, classId: e.target.value })}
-                        >
-                            <option value="">Class</option>
-                            {classes.map(c => (
-                                <option key={c._id} value={c._id}>{c.name}</option>
-                            ))}
-                        </select>
-
-                        <select
-                            className="input"
-                            value={form.sectionId}
-                            onChange={e => setForm({ ...form, sectionId: e.target.value })}
-                        >
-                            <option value="">Section</option>
-                            {sections.map(s => (
-                                <option key={s._id} value={s._id}>{s.name}</option>
-                            ))}
-                        </select>
-
-                        <select
-                            className="input"
-                            value={form.streamId}
-                            onChange={e => setForm({ ...form, streamId: e.target.value })}
-                        >
-                            <option value="">Stream</option>
-                            {streams.map(s => (
-                                <option key={s._id} value={s._id}>{s.name}</option>
-                            ))}
-                        </select>
-
-                        <select
-                            className="input"
                             value={form.targetId}
-                            onChange={e => setForm({ ...form, targetId: e.target.value })}
+                            onChange={e => {
+                                const selected = targets.find(s => s._id === e.target.value);
+                                setForm({
+                                    ...form,
+                                    targetId: e.target.value,
+                                    targetName: selected
+                                        ? `${selected.fullName}${selected.rollNo ? ` (${selected.rollNo})` : ""}`
+                                        : ""
+                                });
+                            }}
                         >
                             <option value="">Select Student</option>
-                            {students.map(s => (
+                            {targets.map(s => (
                                 <option key={s._id} value={s._id}>
-                                    {s.name} {s.rollNo ? `(${s.rollNo})` : ""}
+                                    {s.fullName} {s.rollNo ? `(${s.rollNo})` : ""}
                                 </option>
                             ))}
                         </select>
+
                     </>
                 )}
 
@@ -204,14 +220,20 @@ export default function ComplaintForm({ onSaved, onClose }) {
                     rows="3"
                     placeholder="Description"
                     value={form.description}
-                    onChange={e => setForm({ ...form, description: e.target.value })}
+                    onChange={e =>
+                        setForm({ ...form, description: e.target.value })
+                    }
                 />
             </div>
 
             <div className="flex justify-end gap-3">
-                <button onClick={onClose} className="px-4 py-2 rounded bg-gray-100">
+                <button
+                    onClick={onClose}
+                    className="px-4 py-2 rounded bg-gray-100"
+                >
                     Cancel
                 </button>
+
                 <button
                     onClick={submit}
                     disabled={loading}
