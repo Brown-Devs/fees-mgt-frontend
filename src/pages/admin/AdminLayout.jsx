@@ -18,14 +18,13 @@ import {
   HiOutlineUserPlus,
   HiOutlineUsers,
   HiOutlineChatBubbleLeftRight,
-  HiOutlineArrowsRightLeft,
   HiOutlineAcademicCap,
   HiOutlineCurrencyRupee,
   HiChevronDown,
   HiChevronRight,
 } from "react-icons/hi2";
 
-/* ===================== MENU (UNCHANGED) ===================== */
+/* ===================== MENU ===================== */
 const MENU = [
   { key: "dashboard", label: "Dashboard", to: "/admin", icon: <HiOutlineHome /> },
   { key: "school", label: "School Details", to: "/admin/onboarding", icon: <HiOutlineBuildingOffice2 /> },
@@ -64,24 +63,30 @@ const MENU = [
   { key: "complaints", label: "Complaints", to: "/admin/complaints", icon: <HiOutlineChatBubbleLeftRight /> },
 ];
 
-/* ===================== TOPBAR ===================== */
-function Topbar({ schoolName }) {
+/* ===================== TOPBAR (UPDATED) ===================== */
+function Topbar() {
   const navigate = useNavigate();
 
-  function logout() {
+  const logout = () => {
     clearToken();
     navigate("/login", { replace: true });
-  }
+  };
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 bg-white border-b border-slate-200">
-      <div className="text-sm font-medium text-slate-600">
-        {schoolName || "Dashboard"}
-      </div>
+    <header className="h-20 flex items-center justify-between px-8 
+                       bg-[#0a1a44] border-b border-white/10">
+      {/* Left */}
+      <h1 className="text-lg font-semibold text-white">
+        Dashboard
+      </h1>
 
+      {/* Right */}
       <button
         onClick={logout}
-        className="text-sm text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition"
+        className="text-sm font-medium text-white
+                   px-4 py-2 rounded-lg
+                   hover:bg-white/10
+                   transition"
       >
         Logout
       </button>
@@ -95,117 +100,109 @@ function Sidebar({ collapsed, setCollapsed }) {
 
   return (
     <aside
-      className={`bg-white border-r border-slate-200 ${
-        collapsed ? "w-20" : "w-64"
-      } transition-all duration-300`}
+      className={`bg-[#0a1a44] text-slate-300 min-h-screen transition-all duration-300
+        ${collapsed ? "w-20" : "w-64"}`}
     >
-      <div className="h-full flex flex-col">
+      {/* WHITE LOGO STRIP */}
+      <div className="bg-white h-20 flex flex-col items-center justify-center border-b border-slate-200 relative">
+        <img
+          src={logo}
+          alt="Logo"
+          className={`object-contain transition-all duration-300 ${collapsed ? "h-8" : "h-10"
+            }`}
+        />
 
-        {/* Logo */}
-        <div className="px-4 py-6 flex flex-col items-center gap-3">
-  <img
-    src={logo}
-    alt="School Logo"
-    className={`transition-all ${
-      collapsed ? "h-10" : "h-14"
-    }`}
-  />
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="absolute bottom-1 text-[10px] text-slate-400 hover:text-slate-600 hidden md:block"
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? "→" : "←"}
+        </button>
+      </div>
 
-  <button
-    onClick={() => setCollapsed(!collapsed)}
-    className="hidden md:flex text-slate-400 hover:text-slate-600"
-  >
-    🡸
-  </button>
-</div>
-
-
-        {/* Menu */}
-        <nav className="flex-1 overflow-auto px-2 pb-6">
-          <ul className="space-y-1">
-            {MENU.map((m) => {
-              if (m.children) {
-                const isOpen = openMenu === m.key;
-
-                return (
-                  <li key={m.key}>
-                    <button
-                      onClick={() => setOpenMenu(isOpen ? null : m.key)}
-                      className="flex items-center justify-between w-full px-3 py-2.5 text-sm rounded-lg text-slate-700 hover:bg-blue-50 transition"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-lg text-slate-500">{m.icon}</span>
-                        {!collapsed && <span>{m.label}</span>}
-                      </div>
-                      {!collapsed &&
-                        (isOpen ? (
-                          <HiChevronDown className="text-slate-400" />
-                        ) : (
-                          <HiChevronRight className="text-slate-400" />
-                        ))}
-                    </button>
-
-                    {!collapsed && isOpen && (
-                      <ul className="ml-9 mt-1 space-y-1">
-                        {m.children.map((c) => (
-                          <li key={c.key}>
-                            <NavLink
-                              to={c.to}
-                              className={({ isActive }) =>
-                                `block px-3 py-2 text-sm rounded-lg transition ${
-                                  isActive
-                                    ? "bg-blue-100 text-blue-700 font-medium"
-                                    : "text-slate-600 hover:bg-blue-50"
-                                }`
-                              }
-                            >
-                              {c.label}
-                            </NavLink>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                );
-              }
+      {/* MENU */}
+      <nav className="px-3 pt-4">
+        <ul className="space-y-1">
+          {MENU.map((m) => {
+            if (m.children) {
+              const isOpen = openMenu === m.key;
 
               return (
                 <li key={m.key}>
-                  <NavLink
-  to={m.to}
-  end={m.key === "dashboard"}  
-  className={({ isActive }) =>
-    `flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg transition ${
-      isActive
-        ? "bg-blue-100 text-blue-700 font-medium"
-        : "text-slate-700 hover:bg-blue-50"
-    }`
-  }
->
+                  <button
+                    onClick={() => setOpenMenu(isOpen ? null : m.key)}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg
+                               hover:bg-white/10 transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">{m.icon}</span>
+                      {!collapsed && <span>{m.label}</span>}
+                    </div>
+                    {!collapsed &&
+                      (isOpen ? <HiChevronDown /> : <HiChevronRight />)}
+                  </button>
 
-                    <span className="text-lg text-slate-500">{m.icon}</span>
-                    {!collapsed && <span>{m.label}</span>}
-                  </NavLink>
+                  {!collapsed && isOpen && (
+                    <ul className="ml-9 mt-1 space-y-1">
+                      {m.children.map((c) => (
+                        <li key={c.key}>
+                          <NavLink
+                            to={c.to}
+                            className={({ isActive }) =>
+                              `flex items-center gap-2 px-3 py-2 rounded-md text-sm transition
+                              ${isActive
+                                ? "bg-white/20 text-white"
+                                : "hover:bg-white/10"
+                              }`
+                            }
+                          >
+                            {c.icon && <span>{c.icon}</span>}
+                            <span>{c.label}</span>
+                          </NavLink>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
               );
-            })}
-          </ul>
-        </nav>
-      </div>
+            }
+
+            return (
+              <li key={m.key}>
+                <NavLink
+                  to={m.to}
+                  end={m.key === "dashboard"}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2.5 rounded-lg transition
+                    ${isActive
+                      ? "bg-white/20 text-white"
+                      : "hover:bg-white/10"
+                    }`
+                  }
+                >
+                  <span className="text-lg">{m.icon}</span>
+                  {!collapsed && <span>{m.label}</span>}
+                </NavLink>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
     </aside>
   );
 }
 
 /* ===================== LAYOUT ===================== */
-export default function AdminLayout({ schoolName }) {
+export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-blue-50">
+    <div className="min-h-screen flex bg-[#f4f6fb]">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="flex-1 flex flex-col">
-        <Topbar schoolName={schoolName} />
-        <main className="p-6">
+        <Topbar />
+        <main className="px-8 py-6">
           <Outlet />
         </main>
       </div>

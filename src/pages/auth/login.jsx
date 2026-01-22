@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../apis/axios";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import loginVisual from "../../assets/login.png"; 
+import illustration from "../../assets/login.png";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -20,13 +20,13 @@ export default function Login() {
 
     try {
       const payload = {
-        email: (email || "").trim().toLowerCase(),
+        email: email.trim().toLowerCase(),
         password,
       };
 
       const res = await api.post("/api/auth/login", payload);
-
       const { token, user } = res.data || {};
+
       if (!token || !user) throw new Error("Invalid login response");
 
       login(user, token);
@@ -51,89 +51,91 @@ export default function Login() {
           navigate("/");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Invalid email or password");
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-50 px-4 relative">
-      {/* 🔹 Loader Overlay */}
-      {loading && (
-        <div className="absolute inset-0 z-50 bg-white/70 backdrop-blur-sm flex items-center justify-center">
-          <div className="flex items-center gap-3 bg-white px-6 py-4 rounded-xl shadow-lg">
-            <span className="h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm font-medium text-slate-700">
-              Signing you in…
-            </span>
-          </div>
-        </div>
-      )}
+    <div className="min-h-screen bg-[#0b2c5f] flex items-center justify-center px-6">
 
-      {/* 🔹 Main Card */}
-      <div className="w-full max-w-5xl flex shadow-xl rounded-3xl overflow-hidden bg-white min-h-[520px]">
-        
-        {/* LEFT – LOGIN FORM */}
-        <div className="w-full md:w-1/2 flex items-center justify-center p-10">
-          <div className="w-full max-w-sm">
-            <h2 className="text-3xl font-bold text-slate-900 mb-1">
+      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 
+                      rounded-3xl overflow-hidden shadow-2xl">
+
+        {/* LEFT – FORM */}
+        <div className="bg-[#0d3b7a] text-white px-20 py-20 flex items-center">
+          <div className="w-full max-w-lg">
+
+            <h1 className="text-4xl font-semibold mb-2">
               Welcome
-            </h2>
-            <p className="text-slate-500 mb-6">
+            </h1>
+            <p className="text-blue-200 mb-14 text-base">
               Login to your account
             </p>
 
             {error && (
-              <div className="mb-4 text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+              <div className="mb-6 text-sm text-red-300">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              <input
-                type="email"
-                placeholder="Email address"
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base
-                           focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                required
-              />
+            <form onSubmit={handleLogin} className="space-y-10">
 
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base
-                           focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                required
-              />
+              <div>
+                <label className="block text-sm text-blue-200 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="w-full bg-transparent border-b border-blue-300
+                             py-3 text-white text-base
+                             focus:outline-none focus:border-white"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-blue-200 mb-2">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  className="w-full bg-transparent border-b border-blue-300
+                             py-3 text-white text-base
+                             focus:outline-none focus:border-white"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
+                />
+              </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold text-lg
-                           transition-all hover:bg-blue-700 disabled:opacity-60"
+                className="w-full bg-blue-500 hover:bg-blue-600
+                           py-3.5 rounded-md font-medium text-lg
+                           transition disabled:opacity-60"
               >
-                {loading ? "Logging in..." : "Sign in"}
+                {loading ? "Signing in..." : "Login"}
               </button>
             </form>
+
           </div>
         </div>
 
-        {/* RIGHT – VISUAL */}
-       {/* RIGHT – FULL COVER VISUAL */}
-<div className="hidden md:block md:w-1/2 relative bg-blue-100">
-  <img
-    src={loginVisual}
-    alt="School Management System"
-    className="absolute inset-0 w-full h-full object-cover"
-    draggable={false}
-  />
-</div>
+        {/* RIGHT – FULL IMAGE COVER */}
+        <div className="hidden md:block relative">
+          <img
+            src={illustration}
+            alt="Login Illustration"
+            className="absolute inset-0 w-full h-full object-cover"
+            draggable={false}
+          />
+        </div>
 
       </div>
     </div>

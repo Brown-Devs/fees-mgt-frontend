@@ -12,29 +12,29 @@ export default function TeacherLayout() {
   };
 
   return (
-    <div className="min-h-screen flex bg-blue-50">
+    <div className="min-h-screen flex bg-[#0a1a44]">
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200">
+      <aside className="w-64 bg-[#0a1a44] text-slate-300">
         <div className="h-full flex flex-col">
 
-          {/* Logo */}
-          <div className="px-4 py-6 flex flex-col items-center gap-4 border-b">
-            <img src={logo} alt="School Logo" className="h-14" />
-
-            <span className="text-sm font-semibold text-slate-600">
+          {/* WHITE LOGO STRIP */}
+          <div className="bg-white h-20 flex flex-col items-center justify-center border-b border-slate-200">
+            <img src={logo} alt="School Logo" className="h-10 object-contain" />
+            <span className="text-xs font-semibold text-slate-600 mt-1">
               Teacher Panel
             </span>
           </div>
 
           {/* Menu */}
-          <nav className="flex-1 px-3 py-4">
+          <nav className="flex-1 px-3 py-4 space-y-1">
             <NavLink
               to="/teacher/attendance"
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
-                  isActive
-                    ? "bg-blue-100 text-blue-700 font-medium"
-                    : "text-slate-700 hover:bg-blue-50"
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition
+                ${isActive
+                  ? "bg-white/20 text-white font-medium"
+                  : "hover:bg-white/10"
                 }`
               }
             >
@@ -44,10 +44,12 @@ export default function TeacherLayout() {
           </nav>
 
           {/* Logout */}
-          <div className="p-4 border-t">
+          <div className="p-4 border-t border-white/10">
             <button
               onClick={logout}
-              className="w-full text-sm text-rose-600 py-2 rounded-lg hover:bg-rose-50 transition"
+              className="w-full text-sm font-medium text-white
+                         py-2 rounded-lg
+                         hover:bg-white/10 transition"
             >
               Logout
             </button>
@@ -55,10 +57,12 @@ export default function TeacherLayout() {
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 p-6">
-        <Outlet />
-      </main>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        <main className="flex-1 p-6 bg-[#f4f6fb] rounded-tl-3xl">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
