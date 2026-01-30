@@ -21,6 +21,7 @@ import {
   HiOutlineAcademicCap,
   HiOutlineCurrencyRupee,
   HiChevronDown,
+  HiOutlineBookOpen,
   HiChevronRight,
 } from "react-icons/hi2";
 
@@ -60,6 +61,7 @@ const MENU = [
   { key: "holidays", label: "Holiday Calendar", to: "/admin/holidays", icon: <HiOutlineCalendar /> },
   { key: "admission", label: "Admission Enquiry", to: "/admin/admissions", icon: <HiOutlineUserPlus /> },
   { key: "visitors", label: "Visitors", to: "/admin/visitors", icon: <HiOutlineUsers /> },
+  { key: "school-diary", label: "School Diary", to: "/admin/school-diary", icon: <HiOutlineBookOpen /> },
   { key: "complaints", label: "Complaints", to: "/admin/complaints", icon: <HiOutlineChatBubbleLeftRight /> },
 ];
 
