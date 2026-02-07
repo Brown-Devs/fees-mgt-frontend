@@ -20,11 +20,9 @@ export default function SchoolOnboarding() {
   const [school, setSchool] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasBranches, setHasBranches] = useState(false);
-
   const [editMode, setEditMode] = useState(false);
   const [completing, setCompleting] = useState(false);
 
-  
   useEffect(() => {
     async function fetchSchool() {
       try {
@@ -37,23 +35,17 @@ export default function SchoolOnboarding() {
         setLoading(false);
       }
     }
-    
     fetchSchool();
   }, []);
-  
 
-  
   async function completeOnboarding() {
     if (!school?._id) return;
 
     setCompleting(true);
     try {
       await api.put(`/api/schools/${school._id}/onboarding/complete`);
-
-      
       const res = await api.get("/api/schools/me");
       setSchool(res.data.data);
-
       setEditMode(false);
       setCurrentStep(0);
     } catch (err) {
@@ -64,7 +56,6 @@ export default function SchoolOnboarding() {
     }
   }
 
-  
   async function handleNext() {
     if (currentStep === 3 && !hasBranches) {
       await completeOnboarding();
@@ -83,29 +74,24 @@ export default function SchoolOnboarding() {
 
   if (school?.onboarding?.completed && !editMode) {
     return (
-      <div className="max-w-xl mx-auto mt-20 p-6 bg-white border rounded-xl text-center">
-        <h2 className="text-2xl font-semibold text-black">
-          School Onboarding Completed
-        </h2>
-
-        <p className="text-black mt-2">
-          Your school setup is complete.
-        </p>
+      <div className="max-w-xl mx-auto mt-20 p-6 bg-white rounded-2xl shadow-md text-center">
+        <h2 className="text-2xl font-semibold">School Onboarding Completed</h2>
+        <p className="text-slate-600 mt-2">Your school setup is complete.</p>
 
         <div className="mt-6 flex justify-center gap-4">
           <button
             onClick={() => {
               setEditMode(true);
-              setCurrentStep(0); 
+              setCurrentStep(0);
             }}
-            className="px-6 py-2 border rounded"
+            className="px-6 py-2 border rounded-lg"
           >
             Edit Details
           </button>
 
           <button
             onClick={() => (window.location.href = "/admin")}
-            className="px-6 py-2 bg-blue-600 text-white rounded"
+            className="px-6 py-2 bg-black text-white rounded-lg"
           >
             Go to Dashboard
           </button>
@@ -113,26 +99,69 @@ export default function SchoolOnboarding() {
       </div>
     );
   }
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6">
-      {/* Steps */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
-        {STEPS.map((s, i) => (
-          <div
-            key={s}
-            className={`shrink-0 px-3 py-1 rounded-full text-sm whitespace-nowrap ${
-              i === currentStep
-                ? "bg-black text-white"
-                : "bg-slate-100 text-slate-600"
-            }`}
-          >
-            {s}
-          </div>
-        ))}
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+
+      {/* ================= STEPPER ================= */}
+      <div className="relative mb-12">
+
+        {/* Base line */}
+        <div className="absolute top-5 left-0 right-0 h-[2px] bg-slate-300" />
+
+        {/* Progress line */}
+        <div
+          className="absolute top-5 left-0 h-[2px] bg-black transition-all duration-300"
+          style={{
+            width: `${(currentStep / (STEPS.length - 1)) * 100}%`,
+          }}
+        />
+
+        {/* Steps */}
+        <div className="relative flex justify-between">
+          {STEPS.map((step, index) => {
+            const isCompleted = index < currentStep;
+            const isActive = index === currentStep;
+
+            return (
+              <div key={step} className="flex flex-col items-center w-full">
+
+                <div
+                  className={`
+                    z-10 w-10 h-10 rounded-full flex items-center justify-center
+                    text-sm font-semibold transition-all
+                    ${isCompleted
+                      ? "bg-black text-white"
+                      : isActive
+                        ? "bg-white border-2 border-black text-black scale-110 shadow-md"
+                        : "bg-white border border-slate-400 text-slate-400"
+                    }
+                  `}
+                >
+                  {index + 1}
+                </div>
+
+                <p
+                  className={`
+                    mt-3 text-xs sm:text-sm text-center whitespace-nowrap
+                    ${isActive
+                      ? "font-semibold text-black"
+                      : isCompleted
+                        ? "text-black"
+                        : "text-slate-500"
+                    }
+                  `}
+                >
+                  {step}
+                </p>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="bg-white border rounded-xl p-4 sm:p-6">
+      {/* ================= CONTENT ================= */}
+      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
         {currentStep === 0 && <SchoolProfile school={school} />}
         {currentStep === 1 && <AcademicSettings school={school} />}
         {currentStep === 2 && <BankDetails school={school} />}
@@ -147,12 +176,13 @@ export default function SchoolOnboarding() {
         )}
       </div>
 
-      {/* Navigation */}
-      <div className="flex flex-col sm:flex-row gap-3 justify-between mt-6">
+      {/* ================= NAVIGATION ================= */}
+      <div className="flex flex-col sm:flex-row gap-3 justify-between mt-8">
         <button
           disabled={currentStep === 0}
           onClick={() => setCurrentStep((s) => s - 1)}
-          className="w-full sm:w-auto px-4 py-2 border rounded disabled:opacity-50"
+          className="w-full sm:w-auto px-5 py-2.5 rounded-lg border
+                     disabled:opacity-50"
         >
           Back
         </button>
@@ -160,14 +190,17 @@ export default function SchoolOnboarding() {
         <button
           onClick={handleNext}
           disabled={completing}
-          className="w-full sm:w-auto px-6 py-2 bg-black text-white rounded disabled:opacity-60"
+          className="w-full sm:w-auto px-6 py-2.5 rounded-lg
+                     bg-black text-white font-medium
+                     hover:bg-slate-800 transition
+                     disabled:opacity-60"
         >
           {completing
             ? "Finishing..."
             : currentStep === STEPS.length - 1 ||
               (!hasBranches && currentStep === 3)
-            ? "Finish Setup"
-            : "Next"}
+              ? "Finish Setup"
+              : "Next"}
         </button>
       </div>
     </div>
