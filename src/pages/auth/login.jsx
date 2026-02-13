@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../apis/axios";
 import { useAuth } from "../../contexts/AuthContext";
-import illustration from "../../assets/loginn.webp";
+import illustration from "../../assets/logi.jpg";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -57,137 +57,133 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f3f8ff] flex items-center justify-center px-6">
-      <div className="w-full max-w-7xl bg-white rounded-3xl shadow-[0_24px_60px_rgba(0,0,0,0.08)] grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
+    <div className="min-h-screen flex flex-col lg:flex-row font-poppins">
 
-        {/* ================= LEFT SECTION ================= */}
-        <div className="relative bg-[#edf4ff] px-20 pt-20 pb-16 flex flex-col justify-between overflow-hidden">
+      {/* ================= LEFT PANEL ================= */}
+      <div className="relative w-full lg:w-[65%] flex items-center overflow-hidden">
 
-          {/* soft wave background */}
-          <div className="absolute inset-0">
-            <svg
-              viewBox="0 0 1440 700"
-              className="absolute bottom-0 w-full h-full"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0,260 C360,340 720,140 1040,220 1240,280 1440,160 1440,160 L1440,700 L0,700 Z"
-                fill="#e4efff"
-              />
-            </svg>
-          </div>
+        {/* Background Image */}
+        <img
+          src={illustration}
+          alt="School Background"
+          className="absolute inset-0 w-full h-full object-cover scale-105 blur-[2px]"
+        />
 
-          {/* title */}
-          <div className="relative z-10 text-center">
-            <h2 className="text-2xl font-semibold text-[#2b3a5a]">
-              School Management System
-            </h2>
-          </div>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/65 via-blue-800/55 to-blue-700/45"></div>
 
-          {/* illustration */}
-          <div className="relative z-10 flex justify-center mt-12">
-            <div className="relative">
-              <img
-                src={illustration}
-                alt="School management illustration"
-                className="w-full max-w-[820px] select-none"
-                draggable={false}
-              />
-              {/* ground shadow */}
-              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[60%] h-6 bg-black/10 blur-2xl rounded-full" />
-            </div>
-          </div>
+        {/* Left Fade for Readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-950/70 via-blue-900/40 to-transparent"></div>
 
-          {/* feature cards */}
-          <div className="relative z-10 flex justify-center gap-8 -mt-4">
-            <FeatureCard
-              title="Academics"
-              desc="Classes, attendance & exams"
-              icon="📘"
-            />
-            <FeatureCard
-              title="Fees & Accounts"
-              desc="Billing & payments"
-              icon="💰"
-            />
-            <FeatureCard
-              title="Reports & Communication"
-              desc="Insights & communication"
-              icon="📊"
-            />
+        {/* Content */}
+        <div className="relative z-10 px-16 lg:px-24 py-24 text-white">
+
+          <h1 className="text-5xl lg:text-6xl font-semibold leading-tight tracking-tight mb-6 max-w-2xl drop-shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
+            Empowering{" "}
+            <span className="bg-gradient-to-r from-blue-300 to-cyan-200 bg-clip-text text-transparent">
+              Smarter Schools
+            </span>
+            <br />
+            Through Digital Excellence
+          </h1>
+
+          <p className="text-white/90 text-base lg:text-lg mb-10 max-w-xl leading-relaxed">
+            A unified platform to simplify administration, elevate academic
+            management, and strengthen school-wide collaboration.
+          </p>
+
+          {/* Compact Feature Badges */}
+          <div className="flex flex-wrap gap-4 mt-6">
+
+            <MiniFeature icon="🎓" title="Academics" />
+            <MiniFeature icon="💳" title="Fee Automation" />
+            <MiniFeature icon="📊" title="Smart Reports" />
+            <MiniFeature icon="📩" title="Parent Connect" />
+
           </div>
         </div>
+      </div>
 
-        {/* ================= RIGHT SECTION ================= */}
-        <div className="px-16 py-16 flex items-center justify-center">
-          <div className="w-full max-w-md">
+      {/* ================= RIGHT PANEL ================= */}
+      <div className="w-full lg:w-[35%] bg-white flex items-center justify-center px-10 lg:px-16 py-24">
 
-            <h2 className="text-3xl font-semibold text-gray-800 mb-2">
-              Welcome Back
-            </h2>
-            <p className="text-gray-500 mb-8">
-              Login to access your dashboard
-            </p>
+        <div className="w-full max-w-sm">
 
-            {error && (
-              <div className="mb-6 text-sm text-red-600 bg-red-50 px-4 py-3 rounded-lg">
-                {error}
-              </div>
-            )}
+          <h2 className="text-3xl font-semibold text-gray-800 mb-2">
+            Welcome Back
+          </h2>
 
-            <form onSubmit={handleLogin} className="space-y-6">
-              <input
-                type="email"
-                placeholder="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-                required
-              />
+          <p className="text-gray-500 mb-8">
+            Login to access your dashboard
+          </p>
 
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-                required
-              />
+          {error && (
+            <div className="mb-6 text-sm text-red-600 bg-red-50 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white transition disabled:opacity-60"
-              >
-                {loading ? "Signing in..." : "Login to Dashboard"}
-              </button>
-            </form>
+          <form onSubmit={handleLogin} className="space-y-6">
 
-            <p className="text-center text-xs text-gray-400 mt-6">
-              Secure access for authorized users only
-            </p>
-          </div>
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition duration-200"
+              required
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition duration-200"
+              required
+            />
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl font-semibold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white transition duration-300 shadow-lg hover:shadow-blue-500/30"
+            >
+              {loading ? "Signing in..." : "Login to Dashboard"}
+            </button>
+
+          </form>
+
+          <p className="text-center text-xs text-gray-400 mt-6">
+            Secure access for authorized users only
+          </p>
+
         </div>
       </div>
     </div>
   );
 }
 
-/* ================= FEATURE CARD ================= */
+/* ================= MINI FEATURE BADGE ================= */
 
-function FeatureCard({ title, desc, icon }) {
+function MiniFeature({ icon, title }) {
   return (
-    <div className="bg-white w-64 px-6 py-5 rounded-2xl text-center
-                    shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
-      <div className="text-2xl mb-2">{icon}</div>
-      <h4 className="text-sm font-semibold text-gray-800">
-        {title}
-      </h4>
-      <p className="text-xs text-gray-500 mt-1">
-        {desc}
-      </p>
+    <div className="
+      flex items-center gap-2
+      bg-white/10
+      backdrop-blur-md
+      border border-white/20
+      px-4 py-2
+      rounded-full
+      text-sm
+      font-medium
+      text-white
+      transition duration-300
+      hover:bg-white/20
+    ">
+      <span>{icon}</span>
+      <span>{title}</span>
     </div>
   );
 }

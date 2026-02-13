@@ -16,8 +16,6 @@ import IncomeList from "./pages/admin/Income/IncomeList";
 import ExpenseList from "./pages/admin/Expenses/ExpenseList";
 import ComplaintList from "./pages/admin/Complaints/ComplaintList";
 
-
-
 import SuperadminDashboard from "./pages/Superadmin/Dashboard";
 import AdminDashboard from "./pages/admin/Dashboard";
 import SchoolOnboarding from "./pages/admin/Onboarding/SchoolOnboarding";
@@ -26,17 +24,14 @@ import FeeSetup from "./pages/admin/Fees/FeeSetup";
 import UserList from "./pages/admin/Users/UserList";
 import ClassList from "./pages/admin/Class/ClassList";
 
-// STUDENT MODULE
 import StudentListPage from "./modules/students/pages/StudentListPage";
 import StudentCreatePage from "./modules/students/pages/StudentCreatePage";
 import StudentEditPage from "./modules/students/pages/StudentEditPage";
 import StudentDetailPage from "./modules/students/pages/StudentDetailPage";
 
-// STAFF MODULE
 import TeacherList from "./pages/admin/staff/TeacherList";
 import AccountantList from "./pages/admin/staff/AccountantsList";
 
-// PAYMENTS MODULE
 import AdminMakePaymentPage from "./pages/admin/Payments/MakePaymentPage";
 import VerifyPaymentPage from "./pages/admin/Payments/VerifyPaymentPage";
 import ParentMakePaymentPage from "./pages/parent/MakePaymentPage";

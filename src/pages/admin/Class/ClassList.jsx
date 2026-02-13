@@ -89,246 +89,166 @@ const ClassList = () => {
   };
 
   return (
-    <div>
-      {/* <h2 style={{ color: "navy", marginBottom: "20px" }}>
-        Class Management
-      </h2> */}
+  <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/80 py-8 px-4">
+    <div className="max-w-6xl mx-auto space-y-8">
 
-      {/* Create Class Form */}
+      {/* Header */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <h1 className="text-3xl font-bold text-[#001f3f]">
+          Class Management
+        </h1>
+        <p className="text-gray-500 mt-1">
+          Create and manage academic classes efficiently.
+        </p>
+      </div>
+
+      {/* Create Class Card */}
       <form
         onSubmit={handleSubmit}
-        style={{
-          background: "white",
-          padding: "20px",
-          borderRadius: "8px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-          maxWidth: "400px",
-          marginBottom: "30px",
-        }}
+        className="bg-white rounded-2xl shadow-md border border-gray-200 p-6 max-w-lg space-y-5"
       >
-        <label>Class Name *</label>
-        <input
-          type="text"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          required
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "10px",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-          }}
-        />
+        <div className="flex items-center gap-2 pb-4 border-b">
+          <div className="w-1 h-6 bg-[#001f3f] rounded-full" />
+          <h2 className="text-lg font-semibold text-[#001f3f]">
+            Add New Class
+          </h2>
+        </div>
 
-        <label>Section</label>
-        <input
-          type="text"
-          value={form.section}
-          onChange={(e) => setForm({ ...form, section: e.target.value })}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "10px",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-          }}
-        />
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Class Name *"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl
+                       focus:ring-2 focus:ring-[#001f3f]/20 focus:border-[#001f3f]"
+          />
 
-        <label>Stream *</label>
-        <select
-          value={form.stream}
-          onChange={(e) => setForm({ ...form, stream: e.target.value })}
-          required
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "10px",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-          }}
-        >
-          <option value="Regular">Regular</option>
-          <option value="Science">Science</option>
-          <option value="Arts">Arts</option>
-          <option value="Commerce">Commerce</option>
-        </select>
+          <input
+            type="text"
+            placeholder="Section"
+            value={form.section}
+            onChange={(e) => setForm({ ...form, section: e.target.value })}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl
+                       focus:ring-2 focus:ring-[#001f3f]/20 focus:border-[#001f3f]"
+          />
 
-        <button
-          type="submit"
-          disabled={submitting}
-          style={{
-            background: submitting ? "#999" : "black",
-            color: "white",
-            padding: "10px 20px",
-            border: "none",
-            borderRadius: "5px",
-            cursor: submitting ? "not-allowed" : "pointer",
-          }}
-        >
-          {submitting ? "Saving..." : "Add Class"}
-        </button>
+          <select
+            value={form.stream}
+            onChange={(e) => setForm({ ...form, stream: e.target.value })}
+            required
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl
+                       focus:ring-2 focus:ring-[#001f3f]/20 focus:border-[#001f3f]"
+          >
+            <option value="Regular">Regular</option>
+            <option value="Science">Science</option>
+            <option value="Arts">Arts</option>
+            <option value="Commerce">Commerce</option>
+          </select>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="px-6 py-2.5 bg-[#001f3f] hover:bg-[#001933]
+                       text-white font-semibold rounded-xl
+                       shadow-md hover:shadow-lg transition-all
+                       disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {submitting ? "Saving..." : "Add Class"}
+          </button>
+        </div>
       </form>
 
       {/* Class Table */}
-      <table
-        style={{
-          width: "100%",
-          background: "white",
-          borderCollapse: "collapse",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-        }}
-      >
-        <thead style={{ background: "black", color: "white" }}>
-          <tr>
-            <th style={{ padding: "12px", width: "25%" }}>Class</th>
-            <th style={{ padding: "12px", width: "20%" }}>Section</th>
-            <th style={{ padding: "12px", width: "25%" }}>Stream</th>
-            <th
-              style={{
-                padding: "12px",
-                width: "30%",
-                textAlign: "center",
-              }}
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
+      <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-6">
+        <div className="flex items-center gap-2 pb-4 border-b mb-6">
+          <div className="w-1 h-6 bg-[#001f3f] rounded-full" />
+          <h2 className="text-lg font-semibold text-[#001f3f]">
+            Existing Classes
+          </h2>
+        </div>
 
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan="4" style={{ padding: "20px", textAlign: "center" }}>
-                Loading...
-              </td>
-            </tr>
-          ) : classes.length === 0 ? (
-            <tr>
-              <td colSpan="4" style={{ padding: "20px", textAlign: "center" }}>
-                No classes found
-              </td>
-            </tr>
-          ) : (
-            classes.map((cls) => (
-              <tr key={cls._id} style={{ borderBottom: "1px solid #eee" }}>
-                <td style={{ padding: "10px" }}>{cls.name}</td>
-                <td style={{ padding: "10px" }}>
-                  {cls.section || "-"}
-                </td>
-                <td style={{ padding: "10px" }}>{cls.stream}</td>
-
-                <td style={{ padding: "10px", textAlign: "center" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: "10px",
-                    }}
-                  >
-                    <button
-                      onClick={() => setEditing(cls)}
-                      style={{
-                        background: "black",
-                        color: "white",
-                        padding: "6px 14px",
-                        borderRadius: "5px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() => deleteClass(cls._id)}
-                      style={{
-                        background: "red",
-                        color: "white",
-                        padding: "6px 14px",
-                        borderRadius: "5px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
+        <div className="overflow-x-auto rounded-xl border border-gray-200">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Class</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Section</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Stream</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase">Actions</th>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            </thead>
+
+            <tbody className="divide-y">
+              {loading ? (
+                <tr>
+                  <td colSpan="4" className="px-6 py-10 text-center text-gray-500">
+                    Loading...
+                  </td>
+                </tr>
+              ) : classes.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="px-6 py-10 text-center text-gray-400">
+                    No classes found
+                  </td>
+                </tr>
+              ) : (
+                classes.map((cls) => (
+                  <tr key={cls._id} className="hover:bg-[#001f3f]/[0.02]">
+                    <td className="px-6 py-4 font-medium text-gray-800">{cls.name}</td>
+                    <td className="px-6 py-4 text-gray-600">{cls.section || "-"}</td>
+                    <td className="px-6 py-4 text-gray-600">{cls.stream}</td>
+
+                    <td className="px-6 py-4 text-center space-x-2">
+                      <button
+                        onClick={() => setEditing(cls)}
+                        className="px-3 py-1.5 bg-[#001f3f] text-white rounded-lg hover:bg-[#001933]"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => deleteClass(cls._id)}
+                        className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Edit Modal */}
       {editing && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.3)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              background: "white",
-              padding: "20px",
-              borderRadius: "8px",
-              width: "400px",
-            }}
-          >
-            <h3>Edit Class</h3>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white rounded-2xl shadow-xl w-[420px] p-6 space-y-4">
+            <h3 className="text-xl font-semibold text-[#001f3f]">
+              Edit Class
+            </h3>
 
-            <label>Name</label>
             <input
               value={editing.name}
-              onChange={(e) =>
-                setEditing({ ...editing, name: e.target.value })
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "5px",
-              }}
+              onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-xl"
             />
 
-            <label>Section</label>
             <input
               value={editing.section}
-              onChange={(e) =>
-                setEditing({ ...editing, section: e.target.value })
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "5px",
-              }}
+              onChange={(e) => setEditing({ ...editing, section: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-xl"
             />
 
-            <label>Stream</label>
             <select
               value={editing.stream}
-              onChange={(e) =>
-                setEditing({ ...editing, stream: e.target.value })
-              }
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "5px",
-              }}
+              onChange={(e) => setEditing({ ...editing, stream: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-xl"
             >
               <option value="Regular">Regular</option>
               <option value="Science">Science</option>
@@ -336,29 +256,29 @@ const ClassList = () => {
               <option value="Commerce">Commerce</option>
             </select>
 
-            <button
-              onClick={updateClass}
-              style={{
-                background: "navy",
-                color: "white",
-                padding: "10px 20px",
-                borderRadius: "5px",
-              }}
-            >
-              Save
-            </button>
+            <div className="flex justify-end gap-3 pt-3">
+              <button
+                onClick={updateClass}
+                className="px-4 py-2 bg-[#001f3f] text-white rounded-xl hover:bg-[#001933]"
+              >
+                Save
+              </button>
 
-            <button
-              onClick={() => setEditing(null)}
-              style={{ marginLeft: "10px" }}
-            >
-              Cancel
-            </button>
+              <button
+                onClick={() => setEditing(null)}
+                className="px-4 py-2 bg-gray-200 rounded-xl hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
+
     </div>
-  );
+  </div>
+);
+
 };
 
 export default ClassList;
