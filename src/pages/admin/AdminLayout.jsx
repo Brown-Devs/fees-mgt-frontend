@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { clearToken } from "../../lib/api";
+import api from "../../apis/axios";
 import logo from "../../assets/logo.png";
 
 import {
@@ -9,7 +10,6 @@ import {
   HiOutlineBanknotes,
   HiOutlineUserGroup,
   HiOutlineUser,
-  HiOutlineCreditCard,
   HiOutlineChartBar,
   HiOutlineClipboardDocumentList,
   HiOutlineEnvelope,
@@ -18,11 +18,7 @@ import {
   HiOutlineUserPlus,
   HiOutlineUsers,
   HiOutlineChatBubbleLeftRight,
-  HiOutlineAcademicCap,
-  HiOutlineCurrencyRupee,
-  HiChevronDown,
   HiOutlineBookOpen,
-  HiChevronRight,
 } from "react-icons/hi2";
 
 /* ===================== MENU ===================== */
@@ -33,27 +29,6 @@ const MENU = [
   { key: "class", label: "Class", to: "/admin/class", icon: <HiOutlineUserGroup /> },
   { key: "student", label: "Student", to: "/admin/students", icon: <HiOutlineUser /> },
   { key: "attendance", label: "Attendance", to: "/admin/attendance", icon: <HiOutlineClipboardDocumentList /> },
-
-  {
-    key: "payment",
-    label: "Payment",
-    icon: <HiOutlineCreditCard />,
-    children: [
-      { key: "make-payment", label: "Make Payment", to: "/admin/payments/make" },
-      { key: "verify-payment", label: "Verify Payment", to: "/admin/payments/verify" },
-    ],
-  },
-
-  {
-    key: "staff",
-    label: "Staff",
-    icon: <HiOutlineUserGroup />,
-    children: [
-      { key: "teachers", label: "Teachers", to: "/admin/staff/teachers", icon: <HiOutlineAcademicCap /> },
-      { key: "accountants", label: "Accountants", to: "/admin/staff/accountants", icon: <HiOutlineCurrencyRupee /> },
-    ],
-  },
-
   { key: "income", label: "Income", to: "/admin/income", icon: <HiOutlineChartBar /> },
   { key: "expenses", label: "Expenses", to: "/admin/expenses", icon: <HiOutlineClipboardDocumentList /> },
   { key: "announcements", label: "Announcements", to: "/admin/announcements", icon: <HiOutlineEnvelope /> },
@@ -65,130 +40,111 @@ const MENU = [
   { key: "complaints", label: "Complaints", to: "/admin/complaints", icon: <HiOutlineChatBubbleLeftRight /> },
 ];
 
-/* ===================== TOPBAR (UPDATED) ===================== */
+/* ===================== TOPBAR ===================== */
 function Topbar() {
   const navigate = useNavigate();
+  const [schoolName, setSchoolName] = useState("");
+
+  useEffect(() => {
+    const fetchSchool = async () => {
+      try {
+        const res = await api.get("/api/schools/me");
+        setSchoolName(res.data.data?.name || "");
+      } catch (err) {
+        console.error("Failed to fetch school name");
+      }
+    };
+
+    fetchSchool();
+  }, []);
 
   const logout = () => {
     clearToken();
     navigate("/login", { replace: true });
   };
 
+  /* Date Format */
+  const today = new Date().toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
   return (
     <header className="h-20 flex items-center justify-between px-8 
                        bg-[#0a1a44] border-b border-white/10">
-      {/* Left */}
-      <h1 className="text-lg font-semibold text-white">
-        Dashboard
+
+      {/* LEFT SIDE */}
+      <h1 className="text-xl font-semibold text-white">
+        Welcome,{" "}
+        <span className="text-[#c7d2fe]">
+          {schoolName || "Loading..."}
+        </span>
       </h1>
 
-      {/* Right */}
-      <button
-        onClick={logout}
-        className="text-sm font-medium text-white
-                   px-4 py-2 rounded-lg
-                   hover:bg-white/10
-                   transition"
-      >
-        Logout
-      </button>
+      {/* RIGHT SIDE */}
+      <div className="flex items-center gap-6">
+
+        {/* Date Only */}
+        <span className="text-sm text-white/80 font-medium">
+          {today}
+        </span>
+
+        {/* Logout Button with Better Border */}
+        <button
+          onClick={logout}
+          className="text-sm font-medium text-white
+                     px-5 py-2 rounded-lg
+                     border-2 border-white
+                     hover:bg-white hover:text-[#0a1a44]
+                     transition-all duration-200"
+        >
+          Logout
+        </button>
+      </div>
     </header>
   );
 }
 
 /* ===================== SIDEBAR ===================== */
 function Sidebar({ collapsed, setCollapsed }) {
-  const [openMenu, setOpenMenu] = useState(null);
-
   return (
     <aside
       className={`bg-[#0a1a44] text-slate-300 min-h-screen transition-all duration-300
         ${collapsed ? "w-20" : "w-64"}`}
     >
-      {/* WHITE LOGO STRIP */}
-      <div className="bg-white h-20 flex flex-col items-center justify-center border-b border-slate-200 relative">
+      <div className="bg-white h-20 flex items-center justify-center border-b border-slate-200">
         <img
           src={logo}
           alt="Logo"
-          className={`object-contain transition-all duration-300 ${collapsed ? "h-8" : "h-10"
-            }`}
+          className={`object-contain transition-all duration-300 ${
+            collapsed ? "h-8" : "h-10"
+          }`}
         />
-
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="absolute bottom-1 text-[10px] text-slate-400 hover:text-slate-600 hidden md:block"
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? "→" : "←"}
-        </button>
       </div>
 
-      {/* MENU */}
       <nav className="px-3 pt-4">
         <ul className="space-y-1">
-          {MENU.map((m) => {
-            if (m.children) {
-              const isOpen = openMenu === m.key;
-
-              return (
-                <li key={m.key}>
-                  <button
-                    onClick={() => setOpenMenu(isOpen ? null : m.key)}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg
-                               hover:bg-white/10 transition"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{m.icon}</span>
-                      {!collapsed && <span>{m.label}</span>}
-                    </div>
-                    {!collapsed &&
-                      (isOpen ? <HiChevronDown /> : <HiChevronRight />)}
-                  </button>
-
-                  {!collapsed && isOpen && (
-                    <ul className="ml-9 mt-1 space-y-1">
-                      {m.children.map((c) => (
-                        <li key={c.key}>
-                          <NavLink
-                            to={c.to}
-                            className={({ isActive }) =>
-                              `flex items-center gap-2 px-3 py-2 rounded-md text-sm transition
-                              ${isActive
-                                ? "bg-white/20 text-white"
-                                : "hover:bg-white/10"
-                              }`
-                            }
-                          >
-                            {c.icon && <span>{c.icon}</span>}
-                            <span>{c.label}</span>
-                          </NavLink>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              );
-            }
-
-            return (
-              <li key={m.key}>
-                <NavLink
-                  to={m.to}
-                  end={m.key === "dashboard"}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2.5 rounded-lg transition
-                    ${isActive
+          {MENU.map((m) => (
+            <li key={m.key}>
+              <NavLink
+                to={m.to}
+                end={m.key === "dashboard"}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2.5 rounded-lg transition
+                  ${
+                    isActive
                       ? "bg-white/20 text-white"
                       : "hover:bg-white/10"
-                    }`
-                  }
-                >
-                  <span className="text-lg">{m.icon}</span>
-                  {!collapsed && <span>{m.label}</span>}
-                </NavLink>
-              </li>
-            );
-          })}
+                  }`
+                }
+              >
+                <span className="text-lg">{m.icon}</span>
+                {!collapsed && <span>{m.label}</span>}
+              </NavLink>
+            </li>
+          ))}
         </ul>
       </nav>
     </aside>

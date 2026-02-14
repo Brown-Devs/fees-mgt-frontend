@@ -22,7 +22,6 @@ const StudentListPage = () => {
     newAdmissionSession: "",
   });
 
-  /* ================= LOAD DATA ================= */
   const loadStudents = async () => {
     try {
       const res = await fetchStudents();
@@ -56,7 +55,6 @@ const StudentListPage = () => {
     init();
   }, []);
 
-  /* ================= AUTO ROLL NUMBER ================= */
   useEffect(() => {
     if (!upgradeForm.newClassId) return;
 
@@ -113,194 +111,221 @@ const StudentListPage = () => {
 
   /* ================= RENDER ================= */
   return (
-    <>
-      <div className="p-6 max-w-7xl mx-auto">
+  <>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/80 py-8 px-4">
+      <div className="max-w-7xl mx-auto space-y-8">
+
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-semibold text-[#0a1a44]">
-            Students
-          </h2>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-[#001f3f]">
+              Students
+            </h1>
+            <p className="text-gray-500 mt-1">
+              Manage student records and academic transitions.
+            </p>
+          </div>
 
           <button
             onClick={() => navigate("/admin/students/new")}
-            className="px-4 py-2 bg-[#0a1a44] text-white rounded-lg hover:bg-[#0c2258]"
+            className="px-5 py-2.5 bg-[#001f3f] hover:bg-[#001933]
+                       text-white rounded-xl shadow-md hover:shadow-lg transition-all"
           >
             + Add Student
           </button>
         </div>
 
-        {/* Table */}
-        <div className="bg-white shadow-md rounded-xl overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-[#0a1a44] text-white">
-              <tr>
-                <th className="p-3">Name</th>
-                <th className="p-3">Class</th>
-                <th className="p-3">Roll No</th>
-                <th className="p-3">Mobile</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Actions</th>
-              </tr>
-            </thead>
+        {/* Table Card */}
+        <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-6">
+          <div className="flex items-center gap-2 pb-4 border-b mb-6">
+            <div className="w-1 h-6 bg-[#001f3f] rounded-full" />
+            <h2 className="text-lg font-semibold text-[#001f3f]">
+              Student List
+            </h2>
+          </div>
 
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="6" className="p-6 text-center text-gray-500">
-                    Loading...
-                  </td>
+          <div className="overflow-x-auto rounded-xl border border-gray-200">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Class</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Roll No</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Mobile</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                  <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase">Actions</th>
                 </tr>
-              ) : students.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="p-6 text-center text-gray-500">
-                    No students found
-                  </td>
-                </tr>
-              ) : (
-                students.map((s) => (
-                  <tr key={s._id} className="border-b hover:bg-gray-50">
-                    <td className="p-3">
-                      {s.firstName} {s.lastName}
-                    </td>
-                    <td className="p-3">{s.classId?.name || "-"}</td>
-                    <td className="p-3">{s.rollNo || "-"}</td>
-                    <td className="p-3">{s.mobile || "-"}</td>
-                    <td className="p-3">
-                      <span
-                        className={`px-2 py-1 rounded text-sm ${
-                          s.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {s.status}
-                      </span>
-                    </td>
+              </thead>
 
-                    <td className="p-3 flex gap-3">
-                      <button
-                        onClick={() => navigate(`/admin/students/${s._id}`)}
-                        className="text-blue-600 hover:underline"
-                      >
-                        View
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          navigate(`/admin/students/${s._id}/edit`)
-                        }
-                        className="text-emerald-600 hover:underline"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => openUpgradeModal(s)}
-                        className="text-indigo-600 hover:underline"
-                      >
-                        Upgrade
-                      </button>
+              <tbody className="divide-y">
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                      Loading...
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                ) : students.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-10 text-center text-gray-400">
+                      No students found
+                    </td>
+                  </tr>
+                ) : (
+                  students.map((s) => (
+                    <tr key={s._id} className="hover:bg-[#001f3f]/[0.02]">
+                      <td className="px-6 py-4 font-medium text-gray-800">
+                        {s.firstName} {s.lastName}
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">
+                        {s.classId?.name || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">
+                        {s.rollNo || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">
+                        {s.mobile || "-"}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            s.status === "Active"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-rose-50 text-rose-700"
+                          }`}
+                        >
+                          {s.status}
+                        </span>
+                      </td>
 
-      {/* ================= UPGRADE MODAL ================= */}
-      {upgradeModal && selectedStudent && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 space-y-4">
-            <h3 className="text-xl font-semibold">Upgrade Student</h3>
+                      <td className="px-6 py-4 text-center space-x-3">
+                        <button
+                          onClick={() => navigate(`/admin/students/${s._id}`)}
+                          className="text-[#001f3f] font-medium hover:underline"
+                        >
+                          View
+                        </button>
 
-            <p className="text-gray-600">
-              <strong>
-                {selectedStudent.firstName} {selectedStudent.lastName}
-              </strong>
-              <br />
-              Current Class: {selectedStudent.classId?.name}
-            </p>
+                        <button
+                          onClick={() =>
+                            navigate(`/admin/students/${s._id}/edit`)
+                          }
+                          className="text-emerald-600 font-medium hover:underline"
+                        >
+                          Edit
+                        </button>
 
-            {/* New Class */}
-            <select
-  className="w-full border p-2 rounded"
-  value={upgradeForm.newClassId}
-  onChange={(e) => {
-    const classId = e.target.value;
-    const selected = classes.find((c) => c._id === classId);
-
-    setUpgradeForm({
-      ...upgradeForm,
-      newClassId: classId,
-      newSection: selected?.section || "",
-      newStream: selected?.stream || "",
-    });
-  }}
->
-  <option value="">Select New Class</option>
-
-  {classes.map((c) => (
-    <option key={c._id} value={c._id}>
-      {c.name}
-      {c.section ? ` - ${c.section}` : ""}
-      {c.stream ? ` - ${c.stream}` : ""}
-    </option>
-  ))}
-</select>
-
-            <div className="w-full border p-2 rounded bg-gray-100 text-gray-700">
-  Section: {upgradeForm.newSection || "-"}
-</div>
-
-<div className="w-full border p-2 rounded bg-gray-100 text-gray-700">
-  Stream: {upgradeForm.newStream || "-"}
-</div>
-
-            <input
-              type="number"
-              placeholder="New Roll Number"
-              className="w-full border p-2 rounded"
-              value={upgradeForm.newRollNo}
-              onChange={(e) =>
-                setUpgradeForm({ ...upgradeForm, newRollNo: e.target.value })
-              }
-            />
-
-            <input
-              type="text"
-              placeholder="New Admission Session (e.g., 2024-25)"
-              className="w-full border p-2 rounded"
-              value={upgradeForm.newAdmissionSession}
-              onChange={(e) =>
-                setUpgradeForm({
-                  ...upgradeForm,
-                  newAdmissionSession: e.target.value,
-                })
-              }
-            />
-
-            <div className="flex justify-end gap-3">
-              <button
-                className="bg-gray-300 px-4 py-2 rounded"
-                onClick={closeUpgradeModal}
-              >
-                Cancel
-              </button>
-
-              <button
-                className="bg-[#0a1a44] text-white px-4 py-2 rounded"
-                onClick={upgradeStudent}
-              >
-                Upgrade
-              </button>
-            </div>
+                        <button
+                          onClick={() => openUpgradeModal(s)}
+                          className="text-indigo-600 font-medium hover:underline"
+                        >
+                          Upgrade
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-      )}
-    </>
-  );
+
+      </div>
+    </div>
+
+    {/* ================= UPGRADE MODAL ================= */}
+    {upgradeModal && selectedStudent && (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl shadow-xl w-[420px] p-6 space-y-4">
+          <h3 className="text-xl font-semibold text-[#001f3f]">
+            Upgrade Student
+          </h3>
+
+          <p className="text-gray-600 text-sm">
+            <strong>
+              {selectedStudent.firstName} {selectedStudent.lastName}
+            </strong>
+            <br />
+            Current Class: {selectedStudent.classId?.name}
+          </p>
+
+          <select
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl
+                       focus:ring-2 focus:ring-[#001f3f]/20 focus:border-[#001f3f]"
+            value={upgradeForm.newClassId}
+            onChange={(e) => {
+              const classId = e.target.value;
+              const selected = classes.find((c) => c._id === classId);
+
+              setUpgradeForm({
+                ...upgradeForm,
+                newClassId: classId,
+                newSection: selected?.section || "",
+                newStream: selected?.stream || "",
+              });
+            }}
+          >
+            <option value="">Select New Class</option>
+            {classes.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+                {c.section ? ` - ${c.section}` : ""}
+                {c.stream ? ` - ${c.stream}` : ""}
+              </option>
+            ))}
+          </select>
+
+          <div className="w-full px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm">
+            Section: {upgradeForm.newSection || "-"}
+          </div>
+
+          <div className="w-full px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm">
+            Stream: {upgradeForm.newStream || "-"}
+          </div>
+
+          <input
+            type="number"
+            placeholder="New Roll Number"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl"
+            value={upgradeForm.newRollNo}
+            onChange={(e) =>
+              setUpgradeForm({ ...upgradeForm, newRollNo: e.target.value })
+            }
+          />
+
+          <input
+            type="text"
+            placeholder="New Admission Session (e.g., 2024-25)"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl"
+            value={upgradeForm.newAdmissionSession}
+            onChange={(e) =>
+              setUpgradeForm({
+                ...upgradeForm,
+                newAdmissionSession: e.target.value,
+              })
+            }
+          />
+
+          <div className="flex justify-end gap-3 pt-3">
+            <button
+              className="px-4 py-2 bg-gray-200 rounded-xl hover:bg-gray-300"
+              onClick={closeUpgradeModal}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="px-4 py-2 bg-[#001f3f] text-white rounded-xl hover:bg-[#001933]"
+              onClick={upgradeStudent}
+            >
+              Upgrade
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
+);
+
 };
 
 export default StudentListPage;
