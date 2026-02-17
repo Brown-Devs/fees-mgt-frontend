@@ -20,8 +20,8 @@ export default function SchoolOnboarding() {
   const [school, setSchool] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasBranches, setHasBranches] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     async function fetchSchool() {
@@ -46,11 +46,20 @@ export default function SchoolOnboarding() {
       await api.put(`/api/schools/${school._id}/onboarding/complete`);
       const res = await api.get("/api/schools/me");
       setSchool(res.data.data);
-      setEditMode(false);
-      setCurrentStep(0);
+
+      // Scroll to top smoothly
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // Show success message
+      setSuccessMessage("School settings saved successfully.");
+
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+
     } catch (err) {
       console.error(err);
-      alert("Failed to complete onboarding");
+      alert("Failed to save changes");
     } finally {
       setCompleting(false);
     }
@@ -72,137 +81,119 @@ export default function SchoolOnboarding() {
 
   if (loading) return <div className="p-6">Loading school...</div>;
 
-  if (school?.onboarding?.completed && !editMode) {
-    return (
-      <div className="max-w-xl mx-auto mt-20 p-6 bg-white rounded-2xl shadow-md text-center">
-        <h2 className="text-2xl font-semibold">School Onboarding Completed</h2>
-        <p className="text-slate-600 mt-2">Your school setup is complete.</p>
+  return (
+  <div className="p-6 bg-slate-100 min-h-screen">
 
-        <div className="mt-6 flex justify-center gap-4">
-          <button
-            onClick={() => {
-              setEditMode(true);
-              setCurrentStep(0);
-            }}
-            className="px-6 py-2 border rounded-lg"
-          >
-            Edit Details
-          </button>
+    {/* PAGE HEADER */}
+    <div className="mb-6">
+      <h1 className="text-2xl font-semibold text-slate-800">
+        School Setup
+      </h1>
+      <p className="text-sm text-slate-500 mt-1">
+        Configure your institution details and academic settings
+      </p>
+    </div>
 
-          <button
-            onClick={() => (window.location.href = "/admin")}
-            className="px-6 py-2 bg-black text-white rounded-lg"
-          >
-            Go to Dashboard
-          </button>
+    {/* CENTERED SUCCESS BAR */}
+    {successMessage && (
+      <div className="flex justify-center mb-6">
+        <div className="w-full max-w-2xl px-6 py-3 rounded-md border border-[#0f172a]/20 bg-[#0f172a]/5 text-[#0f172a] text-sm text-center font-medium">
+          {successMessage}
         </div>
       </div>
-    );
-  }
+    )}
 
-  return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+    <div className="flex gap-6">
 
-      {/* ================= STEPPER ================= */}
-      <div className="relative mb-12">
-
-        {/* Base line */}
-        <div className="absolute top-5 left-0 right-0 h-[2px] bg-slate-300" />
-
-        {/* Progress line */}
-        <div
-          className="absolute top-5 left-0 h-[2px] bg-black transition-all duration-300"
-          style={{
-            width: `${(currentStep / (STEPS.length - 1)) * 100}%`,
-          }}
-        />
-
-        {/* Steps */}
-        <div className="relative flex justify-between">
+      {/* LEFT STEP NAVIGATION */}
+      <div className="w-64 bg-white border rounded-xl p-4 h-fit">
+        <div className="space-y-1">
           {STEPS.map((step, index) => {
-            const isCompleted = index < currentStep;
             const isActive = index === currentStep;
+            const isCompleted = index < currentStep;
 
             return (
-              <div key={step} className="flex flex-col items-center w-full">
-
-                <div
-                  className={`
-                    z-10 w-10 h-10 rounded-full flex items-center justify-center
-                    text-sm font-semibold transition-all
-                    ${isCompleted
-                      ? "bg-black text-white"
-                      : isActive
-                        ? "bg-white border-2 border-black text-black scale-110 shadow-md"
-                        : "bg-white border border-slate-400 text-slate-400"
-                    }
-                  `}
-                >
-                  {index + 1}
-                </div>
-
-                <p
-                  className={`
-                    mt-3 text-xs sm:text-sm text-center whitespace-nowrap
-                    ${isActive
-                      ? "font-semibold text-black"
+              <button
+                key={step}
+                onClick={() => setCurrentStep(index)}
+                className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition flex items-center justify-between
+                  ${
+                    isActive
+                      ? "bg-[#0f172a] text-white"
                       : isCompleted
-                        ? "text-black"
-                        : "text-slate-500"
-                    }
-                  `}
-                >
-                  {step}
-                </p>
-              </div>
+                      ? "bg-slate-100 text-slate-800"
+                      : "text-slate-600 hover:bg-slate-50"
+                  }
+                `}
+              >
+                <span>{step}</span>
+                <span className="text-xs font-medium">
+                  {isCompleted ? "✓" : index + 1}
+                </span>
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* ================= CONTENT ================= */}
-      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
-        {currentStep === 0 && <SchoolProfile school={school} />}
-        {currentStep === 1 && <AcademicSettings school={school} />}
-        {currentStep === 2 && <BankDetails school={school} />}
-        {currentStep === 3 && (
-          <SchoolSettings
-            hasBranches={hasBranches}
-            setHasBranches={setHasBranches}
-          />
-        )}
-        {currentStep === 4 && hasBranches && (
-          <Branches schoolId={school._id} />
-        )}
-      </div>
+      {/* RIGHT CONTENT */}
+      <div className="flex-1">
 
-      {/* ================= NAVIGATION ================= */}
-      <div className="flex flex-col sm:flex-row gap-3 justify-between mt-8">
-        <button
-          disabled={currentStep === 0}
-          onClick={() => setCurrentStep((s) => s - 1)}
-          className="w-full sm:w-auto px-5 py-2.5 rounded-lg border
-                     disabled:opacity-50"
-        >
-          Back
-        </button>
+        <div className="bg-white border rounded-xl p-6">
 
-        <button
-          onClick={handleNext}
-          disabled={completing}
-          className="w-full sm:w-auto px-6 py-2.5 rounded-lg
-                     bg-black text-white font-medium
-                     hover:bg-slate-800 transition
-                     disabled:opacity-60"
-        >
-          {completing
-            ? "Finishing..."
-            : currentStep === STEPS.length - 1 ||
-              (!hasBranches && currentStep === 3)
-              ? "Finish Setup"
-              : "Next"}
-        </button>
+          {/* Step Indicator (No Border Now) */}
+          <div className="mb-6">
+            <p className="text-xs text-slate-500">
+              Step {currentStep + 1} of {STEPS.length}
+            </p>
+          </div>
+
+          {/* STEP CONTENT */}
+          {currentStep === 0 && <SchoolProfile school={school} />}
+          {currentStep === 1 && <AcademicSettings school={school} />}
+          {currentStep === 2 && <BankDetails school={school} />}
+          {currentStep === 3 && (
+            <SchoolSettings
+              hasBranches={hasBranches}
+              setHasBranches={setHasBranches}
+            />
+          )}
+          {currentStep === 4 && hasBranches && (
+            <Branches schoolId={school._id} />
+          )}
+
+          {/* NAVIGATION BUTTONS (No Top Border Now) */}
+          <div className="flex justify-between mt-8">
+            <button
+              disabled={currentStep === 0}
+              onClick={() => setCurrentStep((s) => s - 1)}
+              className="px-5 py-2 rounded-md border text-sm disabled:opacity-40"
+            >
+              Back
+            </button>
+
+            <button
+              onClick={handleNext}
+              disabled={completing}
+              className="px-6 py-2 rounded-md text-sm font-medium
+                         bg-[#0f172a] text-white
+                         hover:bg-slate-800 transition
+                         disabled:opacity-60"
+            >
+              {completing
+                ? "Saving..."
+                : currentStep === STEPS.length - 1 ||
+                  (!hasBranches && currentStep === 3)
+                ? "Finish Setup"
+                : "Next"}
+            </button>
+          </div>
+
+        </div>
+
       </div>
     </div>
-  );
+  </div>
+);
+
 }

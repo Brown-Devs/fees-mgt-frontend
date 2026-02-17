@@ -3,6 +3,8 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { clearToken } from "../../lib/api";
 import api from "../../apis/axios";
 import logo from "../../assets/logo.png";
+import { HiOutlineCog6Tooth } from "react-icons/hi2";
+
 
 import {
   HiOutlineHome,
@@ -24,7 +26,6 @@ import {
 /* ===================== MENU ===================== */
 const MENU = [
   { key: "dashboard", label: "Dashboard", to: "/admin", icon: <HiOutlineHome /> },
-  { key: "school", label: "School Details", to: "/admin/onboarding", icon: <HiOutlineBuildingOffice2 /> },
   { key: "fees", label: "Fees Management", to: "/admin/fees", icon: <HiOutlineBanknotes /> },
   { key: "class", label: "Class", to: "/admin/class", icon: <HiOutlineUserGroup /> },
   { key: "student", label: "Student", to: "/admin/students", icon: <HiOutlineUser /> },
@@ -38,6 +39,8 @@ const MENU = [
   { key: "visitors", label: "Visitors", to: "/admin/visitors", icon: <HiOutlineUsers /> },
   { key: "school-diary", label: "School Diary", to: "/admin/school-diary", icon: <HiOutlineBookOpen /> },
   { key: "complaints", label: "Complaints", to: "/admin/complaints", icon: <HiOutlineChatBubbleLeftRight /> },
+  { key: "settings", label: "Settings", to: "/admin/onboarding", icon: <HiOutlineCog6Tooth /> },
+
 ];
 
 /* ===================== TOPBAR ===================== */
