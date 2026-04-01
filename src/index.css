@@ -1,5 +1,17 @@
 @import "tailwindcss";
 .input {
+  @apply border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none;
+}
+
+.btn-primary {
+  @apply bg-[#0b1f3a] text-white px-4 py-2 rounded-lg hover:opacity-90;
+}
+
+.btn-outline {
+  @apply border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100;
+}
+
+.input {
   @apply border px-3 py-2 rounded w-full bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none;
 }
 .input {

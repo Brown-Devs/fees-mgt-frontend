@@ -36,6 +36,13 @@ import AdminMakePaymentPage from "./pages/admin/Payments/MakePaymentPage";
 import VerifyPaymentPage from "./pages/admin/Payments/VerifyPaymentPage";
 import ParentMakePaymentPage from "./pages/parent/MakePaymentPage";
 import ParentDashboard from "./pages/parent/ParentDashboard";
+import MarksheetDashboard from "./pages/admin/Marksheet/MarksheetDashboard";
+import DiaryDashboard from "./pages/admin/Diary/DiaryDashboard";
+
+
+
+
+
 
 function App() {
   return (
@@ -75,6 +82,9 @@ function App() {
         <Route path="income" element={<IncomeList />} />
         <Route path="expenses" element={<ExpenseList />} />
         <Route path="complaints" element={<ComplaintList />} />
+
+        <Route path="marksheets" element={<MarksheetDashboard />} />
+        <Route path="diary" element={<DiaryDashboard />} />
 
 
         {/* PAYMENTS */}
