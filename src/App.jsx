@@ -5,6 +5,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import ParentLayout from "./pages/parent/ParentLayout";
 import AccountantLayout from "./pages/accountant/AccountantLayout";
 import TeacherLayout from "./pages/teacher/TeacherLayout";
+import StaffLayout from "./pages/staff/StaffLayout";
 
 import Unauthorized from "./pages/Unauthorized";
 import AttendancePage from "./pages/admin/Attendance/AttendancePage";
@@ -123,31 +124,60 @@ function App() {
       </Route>
 
       {/* TEACHER PANEL */}
-      <Route
-        path="/teacher"
-        element={
-          <ProtectedRoute allowRoles={["teacher"]}>
-            <TeacherLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="dashboard" element={<AttendancePage />} />
-        <Route path="attendance" element={<AttendancePage />} />
-      </Route>
+<Route
+  path="/teacher"
+  element={
+    <ProtectedRoute allowRoles={["teacher"]}>
+      <StaffLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="dashboard" element={<AdminDashboard />} />
+  <Route path="attendance" element={<AttendancePage />} />
+  <Route path="students" element={<StudentListPage />} />
+  <Route path="fees" element={<FeeSetup />} />
+  <Route path="announcements" element={<AnnouncementPage />} />
+  <Route path="holidays" element={<HolidayCalendar />} />
+  <Route path="admissions" element={<EnquiryList />} />
+  <Route path="visitors" element={<VisitorList />} />
+  <Route path="income" element={<IncomeList />} />
+  <Route path="expenses" element={<ExpenseList />} />
+  <Route path="complaints" element={<ComplaintList />} />
+  <Route path="marksheets" element={<MarksheetDashboard />} />
+  <Route path="diary" element={<DiaryDashboard />} />
+  <Route path="class" element={<ClassList />} />
+  <Route path="branches" element={<BranchesList />} />
+  <Route path="payments/verify" element={<VerifyPaymentPage />} />
+  <Route path="payments/make" element={<AdminMakePaymentPage />} />
+</Route>
 
-      {/* ACCOUNTANT PANEL */}
-      <Route
-        path="/accountant"
-        element={
-          <ProtectedRoute allowRoles={["accountant"]}>
-            <AccountantLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="dashboard" element={<VerifyPaymentPage />} />
-        <Route path="payments/make" element={<AdminMakePaymentPage />} />
-        <Route path="payments/verify" element={<VerifyPaymentPage />} />
-      </Route>
+{/* ACCOUNTANT PANEL */}
+<Route
+  path="/accountant"
+  element={
+    <ProtectedRoute allowRoles={["accountant"]}>
+      <StaffLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="dashboard" element={<AdminDashboard />} />
+  <Route path="attendance" element={<AttendancePage />} />
+  <Route path="students" element={<StudentListPage />} />
+  <Route path="fees" element={<FeeSetup />} />
+  <Route path="announcements" element={<AnnouncementPage />} />
+  <Route path="holidays" element={<HolidayCalendar />} />
+  <Route path="admissions" element={<EnquiryList />} />
+  <Route path="visitors" element={<VisitorList />} />
+  <Route path="income" element={<IncomeList />} />
+  <Route path="expenses" element={<ExpenseList />} />
+  <Route path="complaints" element={<ComplaintList />} />
+  <Route path="marksheets" element={<MarksheetDashboard />} />
+  <Route path="diary" element={<DiaryDashboard />} />
+  <Route path="class" element={<ClassList />} />
+  <Route path="branches" element={<BranchesList />} />
+  <Route path="payments/verify" element={<VerifyPaymentPage />} />
+  <Route path="payments/make" element={<AdminMakePaymentPage />} />
+</Route>
 
       {/* Default */}
       <Route path="*" element={<div>404 - Page Not Found</div>} />

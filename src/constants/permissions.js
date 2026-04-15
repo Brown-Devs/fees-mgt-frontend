@@ -1,28 +1,132 @@
 export const PERMISSIONS = {
-    DASHBOARD: {
-        VIEW: "dashboard.view",
-    },
-    SCHOOL_DETAILS: {
-        VIEW: "school.view",
-        UPDATE: "school.update",
-    },
-    FEES: {
-        VIEW: "fees.view",
-        CREATE: "fees.create",
-        UPDATE: "fees.update",
-        DELETE: "fees.delete",
-    },
-    STUDENT: {
-        VIEW: "student.view",
-        CREATE: "student.create",
-        UPDATE: "student.update",
-        DELETE: "student.delete",
-    },
-    ATTENDANCE: {
-        VIEW: "attendance.view",
-        CREATE: "attendance.create",
-        UPDATE: "attendance.update",
-        DELETE: "attendance.delete",
-    },
-    // add more modules as needed
+  DASHBOARD: {
+    VIEW: "dashboard.view",
+  },
+  SCHOOL_DETAILS: {
+    VIEW: "school.view",
+    UPDATE: "school.update",
+  },
+  FEES: {
+    VIEW: "fees.view",
+    CREATE: "fees.create",
+    UPDATE: "fees.update",
+    DELETE: "fees.delete",
+  },
+  CLASS: {
+    VIEW: "class.view",
+    CREATE: "class.create",
+    UPDATE: "class.update",
+    DELETE: "class.delete",
+  },
+  BRANCHES: {
+    VIEW: "branches.view",
+    CREATE: "branches.create",
+    UPDATE: "branches.update",
+    DELETE: "branches.delete",
+  },
+  STUDENT: {
+    VIEW: "student.view",
+    CREATE: "student.create",
+    UPDATE: "student.update",
+    DELETE: "student.delete",
+  },
+  ATTENDANCE: {
+    VIEW: "attendance.view",
+    CREATE: "attendance.create",
+    UPDATE: "attendance.update",
+    DELETE: "attendance.delete",
+  },
+  PAYMENT: {
+    VIEW: "payment.view",
+    CREATE: "payment.create",
+    UPDATE: "payment.update",
+    DELETE: "payment.delete",
+  },
+  STAFF: {
+    VIEW: "staff.view",
+    CREATE: "staff.create",
+    UPDATE: "staff.update",
+    DELETE: "staff.delete",
+  },
+  INCOME: {
+    VIEW: "income.view",
+    CREATE: "income.create",
+    UPDATE: "income.update",
+    DELETE: "income.delete",
+  },
+  EXPENSES: {
+    VIEW: "expenses.view",
+    CREATE: "expenses.create",
+    UPDATE: "expenses.update",
+    DELETE: "expenses.delete",
+  },
+  ANNOUNCEMENTS: {
+    VIEW: "announcements.view",
+    CREATE: "announcements.create",
+    UPDATE: "announcements.update",
+    DELETE: "announcements.delete",
+  },
+  ADMISSION_ENQUIRY: {
+    VIEW: "admission_enquiry.view",
+    CREATE: "admission_enquiry.create",
+    UPDATE: "admission_enquiry.update",
+    DELETE: "admission_enquiry.delete",
+  },
+  VISITORS: {
+    VIEW: "visitors.view",
+    CREATE: "visitors.create",
+    UPDATE: "visitors.update",
+    DELETE: "visitors.delete",
+  },
+  COMPLAINTS: {
+    VIEW: "complaints.view",
+    CREATE: "complaints.create",
+    UPDATE: "complaints.update",
+    DELETE: "complaints.delete",
+  },
+  MARKSHEETS: {
+    VIEW: "marksheets.view",
+    CREATE: "marksheets.create",
+    UPDATE: "marksheets.update",
+    DELETE: "marksheets.delete",
+  },
+  SCHOOL_DIARY: {
+    VIEW: "school_diary.view",
+    CREATE: "school_diary.create",
+    UPDATE: "school_diary.update",
+    DELETE: "school_diary.delete",
+  },
+  HOLIDAY_CALENDAR: {
+    VIEW: "holiday_calendar.view",
+    CREATE: "holiday_calendar.create",
+    UPDATE: "holiday_calendar.update",
+    DELETE: "holiday_calendar.delete",
+  },
+  SETTINGS: {
+    VIEW: "settings.view",
+    UPDATE: "settings.update",
+  },
+};
+
+// Human-readable labels for the UI
+export const PERMISSION_LABELS = {
+  DASHBOARD: "Dashboard",
+  SCHOOL_DETAILS: "School Details",
+  FEES: "Fees Management",
+  CLASS: "Class",
+  BRANCHES: "Branches",
+  STUDENT: "Student",
+  ATTENDANCE: "Attendance",
+  PAYMENT: "Payment",
+  STAFF: "Staff",
+  INCOME: "Income",
+  EXPENSES: "Expenses",
+  ANNOUNCEMENTS: "Announcements",
+  ADMISSION_ENQUIRY: "Admission Enquiry",
+  VISITORS: "Visitors",
+  COMPLAINTS: "Complaints",
+  MARKSHEETS: "Marksheets",
+  SCHOOL_DIARY: "School Diary",
+  HOLIDAY_CALENDAR: "Holiday Calendar",
+  SETTINGS: "Settings",
 };

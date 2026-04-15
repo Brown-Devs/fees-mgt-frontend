@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { clearToken } from "../../lib/api";
 import api from "../../apis/axios";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logoo.png";
 
 import {
   HiOutlineHome,
@@ -149,9 +149,13 @@ function Sidebar({ collapsed }) {
   return (
     <aside className={`bg-[#0a1a44] text-white min-h-screen ${collapsed ? "w-20" : "w-64"}`}>
       {/* Logo */}
-      <div className="h-20 bg-white flex items-center justify-center">
-        <img src={logo} alt="logo" className={`${collapsed ? "h-8" : "h-10"}`} />
-      </div>
+<div className="h-20 bg-white flex items-center justify-center px-4">
+  <img
+    src={logo}
+    alt="logo"
+    className={`object-contain ${collapsed ? "h-15 w-15" : "h-19 w-full max-w-[180px]"}`}
+  />
+</div>
 
       <nav className="p-3">
         {MENU.map((m) => {
