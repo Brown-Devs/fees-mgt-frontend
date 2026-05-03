@@ -38,6 +38,9 @@ export default function Login() {
         case "admin":
           navigate("/admin");
           break;
+        case "branch_admin": // ← FIX: was missing — branch_admin fell to default → navigate("/") → 404
+          navigate("/admin");
+          break;
         case "accountant":
           navigate("/accountant/dashboard");
           break;
